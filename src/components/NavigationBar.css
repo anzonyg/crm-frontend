@@ -1,0 +1,66 @@
+/* Estilos generales de la barra de navegación */
+.navbar {
+    background-color: #202841;
+    /* Color de fondo de la barra de navegación */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    /* Sombra para darle un efecto elevado */
+}
+
+/* Estilo del logo dentro de la barra de navegación */
+.navbar-logo {
+    width: 40px;
+    /* Ancho del logo */
+    height: auto;
+    /* Mantener la proporción del logo */
+    margin-right: 10px;
+    /* Espacio entre el logo y el texto */
+}
+
+/* Estilos para el enlace CRM */
+.navbar-brand {
+    display: flex;
+    align-items: center;
+    /* Alinear verticalmente el logo y el texto */
+    font-size: 24px;
+    /* Tamaño de fuente del texto "CRM" */
+    font-weight: bold;
+    color: white;
+    /* Color del texto "CRM" */
+}
+
+.navbar-brand:hover {
+    color: #ff416c;
+    /* Color cuando se pasa el cursor sobre el logo */
+}
+
+/* Estilos para los enlaces de la barra de navegación */
+.navbar-nav .nav-link {
+    color: #9aa2b1;
+    /* Color de los enlaces */
+    margin-right: 15px;
+    /* Espacio entre los enlaces */
+    font-size: 16px;
+    /* Tamaño de fuente */
+}
+
+.navbar-nav .nav-link:hover {
+    color: white;
+    /* Color cuando se pasa el cursor sobre los enlaces */
+}
+
+/* Estilos para el menú de usuario */
+.navbar .user-menu {
+    display: flex;
+    align-items: center;
+    color: white;
+}
+
+.user-menu img {
+    border-radius: 50%;
+    /* Hacer la imagen de perfil circular */
+    width: 40px;
+    /* Tamaño de la imagen */
+    height: 40px;
+    margin-left: 15px;
+    /* Espacio entre la imagen de perfil y otros elementos */
+}

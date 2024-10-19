@@ -1,0 +1,121 @@
+.login-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: #1e1e2d;
+}
+
+.login-card {
+    background-color: #202841;
+    padding: 40px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    width: 400px;
+    text-align: center;
+}
+
+.login-title {
+    color: white;
+    font-size: 28px;
+    margin-bottom: 20px;
+}
+
+.login-subtitle {
+    color: #9aa2b1;
+    margin-bottom: 30px;
+}
+
+.social-login button {
+    margin-bottom: 15px;
+    width: 100%;
+    font-size: 16px;
+    padding: 12px;
+    border-radius: 4px;
+}
+
+.login-google {
+    background-color: #db4437;
+    border: none;
+    color: white;
+    margin-bottom: 10px;
+}
+
+.login-facebook {
+    background-color: #4267B2;
+    border: none;
+    color: white;
+}
+
+.separator {
+    margin: 30px 0;
+    color: white;
+    position: relative;
+}
+
+.separator:before,
+.separator:after {
+    content: "";
+    width: 40%;
+    height: 1px;
+    background-color: #444;
+    position: absolute;
+    top: 50%;
+}
+
+.separator:before {
+    left: 0;
+}
+
+.separator:after {
+    right: 0;
+}
+
+.form-control {
+    margin-bottom: 20px;
+    padding: 15px;
+    font-size: 16px;
+    border-radius: 4px;
+    border: none;
+    background-color: #2b3249;
+    color: white;
+    width: 100%;
+}
+
+.form-check-label,
+.forgot-password a,
+.signup-link a {
+    color: #9aa2b1;
+    font-size: 14px;
+}
+
+.forgot-password a:hover,
+.signup-link a:hover {
+    color: white;
+    text-decoration: underline;
+}
+
+.btn-login {
+    width: 100%;
+    background-image: linear-gradient(to right, #ff416c, #ff4b2b);
+    border: none;
+    padding: 15px;
+    font-size: 16px;
+    color: white;
+    border-radius: 4px;
+    margin-top: 20px;
+    cursor: pointer;
+}
+
+.btn-login:hover {
+    background-image: linear-gradient(to right, #ff4b2b, #ff416c);
+}
+
+/* Nueva clase para el logo */
+.login-logo {
+    width: 150px;
+    /* Ajusta según tu preferencia */
+    height: auto;
+    margin-bottom: 20px;
+    /* Espacio entre el logo y el formulario */
+}
