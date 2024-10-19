@@ -1,6 +1,9 @@
 {
+    "root": "build/",
     "routes": {
-      "/**": "/index.html"
+        "/**": "/index.html",
+        "/leads": "/index.html",
+        "/eventosActividades": "/index.html",
+        "/cotizaciones": "/index.html"
     }
-  }
-  
+}
