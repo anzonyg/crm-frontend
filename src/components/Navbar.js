@@ -1,32 +1,32 @@
 import React from 'react';
-import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
-import NavigationBar from './components/NavigationBar';
-import Home from './components/Home';
-import Leads from './components/Leads';
-import EventosActividades from './components/EventosActividades';
-// Importa todos tus componentes
+import { Navbar, Nav, Container } from 'react-bootstrap';
+import UserMenu from './UserMenu'; // Importa el componente UserMenu
+import { Link } from 'react-router-dom';
 
-function App() {
+const NavigationBar = () => {
   return (
-    <Router>
-      <NavigationBar />
-      <Switch>
-        <Route path="/" exact component={Home} />
-        <Route path="/leads" component={Leads} />
-        <Route path="/eventosActividades" component={EventosActividades} />
-        <Route path="/cotizaciones" component={Cotizaciones} />
-        <Route path="/contratos" component={Contratos} />
-        <Route path="/inventarios" component={Inventarios} />
-        <Route path="/proyectos" component={Proyectos} />
-        <Route path="/followupContracts" component={FollowupContracts} />
-        <Route path="/campanas" component={Campanas} />
-        <Route path="/ticketsSoporte" component={TicketsSoporte} />
-        <Route path="/clientes" component={Clientes} />
-        {/* Aquí va el "catch-all" que manejará rutas no encontradas */}
-        <Route component={Home} /> {/* Redirige cualquier ruta no encontrada a Home */}
-      </Switch>
-    </Router>
+    <Navbar bg="dark" variant="dark" expand="lg">
+      <Container>
+        <Navbar.Brand as={Link} to="/">CRM</Navbar.Brand> {/* Cambié href por as={Link} */}
+        <Navbar.Toggle aria-controls="basic-navbar-nav" />
+        <Navbar.Collapse id="basic-navbar-nav">
+          <Nav className="me-auto">
+            <Nav.Link as={Link} to="/">Home</Nav.Link>
+            <Nav.Link as={Link} to="/leads">Leads</Nav.Link>
+            <Nav.Link as={Link} to="/eventosActividades">Eventos & Actividades</Nav.Link>
+            <Nav.Link as={Link} to="/cotizaciones">Cotizaciones</Nav.Link>
+            <Nav.Link as={Link} to="/contratos">Gestión de Contratos</Nav.Link>
+            <Nav.Link as={Link} to="/inventarios">Inventarios</Nav.Link>
+            <Nav.Link as={Link} to="/proyectos">Proyecto de Ventas</Nav.Link>
+            <Nav.Link as={Link} to="/followupContracts">Seguimiento Contratos</Nav.Link>
+            <Nav.Link as={Link} to="/campanas">Gestión de Campañas</Nav.Link>
+            <Nav.Link as={Link} to="/ticketsSoporte">Soporte al Cliente</Nav.Link>
+            <Nav.Link as={Link} to="/clientes">Clientes</Nav.Link>
+          </Nav>
+        </Navbar.Collapse>
+      </Container>
+    </Navbar>
   );
-}
+};
 
-export default App;
+export default NavigationBar;
