@@ -162,7 +162,7 @@ const EventosActividadesModal = ({ show, handleClose, evento, handleSubmit, isVi
                                 </Form.Select>
                             </Form.Group>
                         </Col>
-                        <Col md={6}>
+                        <Col md={4}>
                             <Form.Group className="mb-3" controlId="subtipo">
                                 <Form.Label>Subtipo</Form.Label>
                                 <Form.Select
@@ -231,7 +231,7 @@ const EventosActividadesModal = ({ show, handleClose, evento, handleSubmit, isVi
                         </Col>
                     </Row>
                     <Row>
-                        <Col md={6}>
+                        <Col md={4}>
                             <Form.Group className="mb-3" controlId="fecha">
                                 <Form.Label>Fecha</Form.Label>
                                 <Form.Control
@@ -246,7 +246,7 @@ const EventosActividadesModal = ({ show, handleClose, evento, handleSubmit, isVi
                                 />
                             </Form.Group>
                         </Col>
-                        <Col md={6}>
+                        <Col md={4}>
                             <Form.Group className="mb-3" controlId="hora">
                                 <Form.Label>Hora</Form.Label>
                                 <Form.Control

@@ -98,7 +98,7 @@ const LeadModal = ({ show, handleClose, lead, handleChange, handleSubmit, isView
             </Col>
           </Row>
           <Row>
-            <Col md={6}>
+            <Col md={4}>
               <Form.Group className="mb-3" controlId="fechaContacto">
                 <Form.Label>Fecha de Contacto</Form.Label>
                 <Form.Control
@@ -113,7 +113,7 @@ const LeadModal = ({ show, handleClose, lead, handleChange, handleSubmit, isView
                 />
               </Form.Group>
             </Col>
-            <Col md={6}>
+            <Col md={4}>
               <Form.Group className="mb-3" controlId="fechaSeguimiento">
                 <Form.Label>Fecha de Seguimiento</Form.Label>
                 <Form.Control

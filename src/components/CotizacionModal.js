@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Modal, Button, Form, Row, Col, InputGroup, Table } from 'react-bootstrap';
-import { FaTimes, FaSave, FaEdit, FaTrash, FaPlus } from 'react-icons/fa';
+import { Modal, Button, Form, Row, Col, Table, Card } from 'react-bootstrap';
+import { FaSave, FaEdit, FaTrash, FaPlus } from 'react-icons/fa';
 import { updateCotizacion, createCotizacion } from '../services/cotizacionService';
 
 const CotizacionModal = ({ show, handleClose, cotizacion, handleSubmit, isViewMode }) => {
@@ -129,184 +129,191 @@ const CotizacionModal = ({ show, handleClose, cotizacion, handleSubmit, isViewMo
                 </Modal.Header>
                 <Modal.Body>
                     {/* Información de la Cotización */}
-                    <h5>Información de la Cotización</h5>
-                    <Row>
-                        <Col md={6}>
-                            <Form.Group className="mb-3" controlId="nombre">
-                                <Form.Label>Nombre</Form.Label>
-                                <Form.Control
-                                    type="text"
-                                    name="nombre"
-                                    value={cotizacionData.nombre}
-                                    onChange={handleChange}
-                                    placeholder="Nombre del cliente o empresa"
-                                    disabled={isViewMode}
-                                    required
-                                />
-                            </Form.Group>
-                        </Col>
-                        <Col md={6}>
-                            <Form.Group className="mb-3" controlId="empresa">
-                                <Form.Label>Empresa</Form.Label>
-                                <Form.Control
-                                    type="text"
-                                    name="empresa"
-                                    value={cotizacionData.empresa}
-                                    onChange={handleChange}
-                                    placeholder="Empresa del cliente"
-                                    disabled={isViewMode}
-                                    required
-                                />
-                            </Form.Group>
-                        </Col>
-                    </Row>
-                    <Row>
-                        <Col md={6}>
-                            <Form.Group className="mb-3" controlId="correo">
-                                <Form.Label>Correo Electrónico</Form.Label>
-                                <Form.Control
-                                    type="email"
-                                    name="correo"
-                                    value={cotizacionData.correo}
-                                    onChange={handleChange}
-                                    placeholder="Correo electrónico del cliente"
-                                    disabled={isViewMode}
-                                    required
-                                />
-                            </Form.Group>
-                        </Col>
-                        <Col md={6}>
-                            <Form.Group className="mb-3" controlId="telefono">
-                                <Form.Label>Teléfono</Form.Label>
-                                <Form.Control
-                                    type="text"
-                                    name="telefono"
-                                    value={cotizacionData.telefono}
-                                    onChange={handleChange}
-                                    placeholder="Teléfono del cliente"
-                                    disabled={isViewMode}
-                                    required
-                                />
-                            </Form.Group>
-                        </Col>
-                    </Row>
-                    <Row>
-                        <Col md={12}>
-                            <Form.Group className="mb-3" controlId="descripcion">
-                                <Form.Label>Descripción</Form.Label>
-                                <Form.Control
-                                    as="textarea"
-                                    rows={3}
-                                    name="descripcion"
-                                    value={cotizacionData.descripcion}
-                                    onChange={handleChange}
-                                    placeholder="Descripción general de la cotización"
-                                    disabled={isViewMode}
-                                />
-                            </Form.Group>
-                        </Col>
-                    </Row>
+                    <Card className="mb-3">
+                        <Card.Header>Información de la Cotización</Card.Header>
+                        <Card.Body>
+                            <Row>
+                                <Col md={6}>
+                                    <Form.Group className="mb-3" controlId="nombre">
+                                        <Form.Label>Nombre</Form.Label>
+                                        <Form.Control
+                                            type="text"
+                                            name="nombre"
+                                            value={cotizacionData.nombre}
+                                            onChange={handleChange}
+                                            placeholder="Nombre del cliente o empresa"
+                                            disabled={isViewMode}
+                                            required
+                                        />
+                                    </Form.Group>
+                                </Col>
+                                <Col md={4}>
+                                    <Form.Group className="mb-3" controlId="empresa">
+                                        <Form.Label>Empresa</Form.Label>
+                                        <Form.Control
+                                            type="text"
+                                            name="empresa"
+                                            value={cotizacionData.empresa}
+                                            onChange={handleChange}
+                                            placeholder="Empresa del cliente"
+                                            disabled={isViewMode}
+                                            required
+                                        />
+                                    </Form.Group>
+                                </Col>
+                            </Row>
+                            <Row>
+                                <Col md={6}>
+                                    <Form.Group className="mb-3" controlId="correo">
+                                        <Form.Label>Correo Electrónico</Form.Label>
+                                        <Form.Control
+                                            type="email"
+                                            name="correo"
+                                            value={cotizacionData.correo}
+                                            onChange={handleChange}
+                                            placeholder="Correo electrónico del cliente"
+                                            disabled={isViewMode}
+                                            required
+                                        />
+                                    </Form.Group>
+                                </Col>
+                                <Col md={4}>
+                                    <Form.Group className="mb-3" controlId="telefono">
+                                        <Form.Label>Teléfono</Form.Label>
+                                        <Form.Control
+                                            type="text"
+                                            name="telefono"
+                                            value={cotizacionData.telefono}
+                                            onChange={handleChange}
+                                            placeholder="Teléfono del cliente"
+                                            disabled={isViewMode}
+                                            required
+                                        />
+                                    </Form.Group>
+                                </Col>
+                            </Row>
+                            <Row>
+                                <Col md={12}>
+                                    <Form.Group className="mb-3" controlId="descripcion">
+                                        <Form.Label>Descripción</Form.Label>
+                                        <Form.Control
+                                            as="textarea"
+                                            rows={3}
+                                            name="descripcion"
+                                            value={cotizacionData.descripcion}
+                                            onChange={handleChange}
+                                            placeholder="Descripción general de la cotización"
+                                            disabled={isViewMode}
+                                        />
+                                    </Form.Group>
+                                </Col>
+                            </Row>
+                        </Card.Body>
+                    </Card>
 
                     {/* Sección: Ítems */}
-                    <h5>Ítems de la Cotización</h5>
-                    <Row>
-                        <Col md={4}>
-                            <Form.Group className="mb-3" controlId="itemDescripcion">
-                                <Form.Label>Descripción del Ítem</Form.Label>
-                                <Form.Control
-                                    type="text"
-                                    name="descripcion"
-                                    value={itemInput.descripcion}
-                                    onChange={handleItemChange}
-                                    placeholder="Descripción del ítem"
-                                    disabled={isViewMode}
-                                />
-                            </Form.Group>
-                        </Col>
-                        <Col md={2}>
-                            <Form.Group className="mb-3" controlId="itemCantidad">
-                                <Form.Label>Cantidad</Form.Label>
-                                <Form.Control
-                                    type="number"
-                                    name="cantidad"
-                                    value={itemInput.cantidad}
-                                    onChange={handleItemChange}
-                                    placeholder="Cantidad"
-                                    disabled={isViewMode}
-                                />
-                            </Form.Group>
-                        </Col>
-                        <Col md={3}>
-                            <Form.Group className="mb-3" controlId="itemPrecioUnitario">
-                                <Form.Label>Precio Unitario</Form.Label>
-                                <Form.Control
-                                    type="number"
-                                    name="precioUnitario"
-                                    value={itemInput.precioUnitario}
-                                    onChange={handleItemChange}
-                                    placeholder="Precio unitario"
-                                    disabled={isViewMode}
-                                />
-                            </Form.Group>
-                        </Col>
-                        <Col md={3}>
-                            <Form.Group className="mb-3" controlId="itemPrecioTotal">
-                                <Form.Label>Precio Total</Form.Label>
-                                <Form.Control
-                                    type="number"
-                                    name="precioTotal"
-                                    value={(itemInput.cantidad * itemInput.precioUnitario).toFixed(2)}
-                                    placeholder="Precio total"
-                                    disabled
-                                />
-                            </Form.Group>
-                        </Col>
-                        <Col md={12} className="d-flex justify-content-end">
-                            <Button onClick={handleAddItem} disabled={!itemInput.descripcion || !itemInput.cantidad || !itemInput.precioUnitario || isViewMode}>
-                                <FaPlus />
-                            </Button>
-                        </Col>
-                    </Row>
-                    <Table striped bordered hover>
-                        <thead>
-                            <tr>
-                                <th>#</th>
-                                <th>Descripción</th>
-                                <th>Cantidad</th>
-                                <th>Precio Unitario</th>
-                                <th>Precio Total</th>
-                                <th className="text-center">Acciones</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {cotizacionData.items.map((item, index) => (
-                                <tr key={index}>
-                                    <td>{index + 1}</td>
-                                    <td>{item.descripcion}</td>
-                                    <td>{item.cantidad}</td>
-                                    <td>{item.precioUnitario}</td>
-                                    <td>{item.precioTotal}</td>
-                                    <td className="text-center">
-                                        <Button variant="danger" onClick={() => handleDeleteItem(index)} disabled={isViewMode}>
-                                            <FaTrash />
-                                        </Button>
-                                    </td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </Table>
-
-                    {/* Total General */}
-                    <Row>
-                        <Col className="text-end">
-                            <h5>Total General: ${cotizacionData.totalGeneral.toFixed(2)}</h5>
-                        </Col>
-                    </Row>
+                    <Card className="mb-3">
+                        <Card.Header>Ítems de la Cotización</Card.Header>
+                        <Card.Body>
+                            <Row>
+                                <Col md={4}>
+                                    <Form.Group className="mb-3" controlId="itemDescripcion">
+                                        <Form.Label>Descripción del Ítem</Form.Label>
+                                        <Form.Control
+                                            type="text"
+                                            name="descripcion"
+                                            value={itemInput.descripcion}
+                                            onChange={handleItemChange}
+                                            placeholder="Descripción del ítem"
+                                            disabled={isViewMode}
+                                        />
+                                    </Form.Group>
+                                </Col>
+                                <Col md={2}>
+                                    <Form.Group className="mb-3" controlId="itemCantidad">
+                                        <Form.Label>Cantidad</Form.Label>
+                                        <Form.Control
+                                            type="number"
+                                            name="cantidad"
+                                            value={itemInput.cantidad}
+                                            onChange={handleItemChange}
+                                            placeholder="Cantidad"
+                                            disabled={isViewMode}
+                                        />
+                                    </Form.Group>
+                                </Col>
+                                <Col md={3}>
+                                    <Form.Group className="mb-3" controlId="itemPrecioUnitario">
+                                        <Form.Label>Precio Unitario</Form.Label>
+                                        <Form.Control
+                                            type="number"
+                                            name="precioUnitario"
+                                            value={itemInput.precioUnitario}
+                                            onChange={handleItemChange}
+                                            placeholder="Precio unitario"
+                                            disabled={isViewMode}
+                                        />
+                                    </Form.Group>
+                                </Col>
+                                <Col md={3}>
+                                    <Form.Group className="mb-3" controlId="itemPrecioTotal">
+                                        <Form.Label>Precio Total</Form.Label>
+                                        <Form.Control
+                                            type="number"
+                                            name="precioTotal"
+                                            value={(itemInput.cantidad * itemInput.precioUnitario).toFixed(2)}
+                                            placeholder="Precio total"
+                                            disabled
+                                        />
+                                    </Form.Group>
+                                </Col>
+                                <Col md={12} className="d-flex justify-content-end">
+                                    <Button onClick={handleAddItem} disabled={!itemInput.descripcion || !itemInput.cantidad || !itemInput.precioUnitario || isViewMode}>
+                                        <FaPlus />
+                                    </Button>
+                                </Col>
+                            </Row>
+                            <Table striped bordered hover>
+                                <thead>
+                                    <tr>
+                                        <th>#</th>
+                                        <th>Descripción</th>
+                                        <th>Cantidad</th>
+                                        <th>Precio Unitario</th>
+                                        <th>Precio Total</th>
+                                        <th className="text-center">Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {cotizacionData.items.map((item, index) => (
+                                        <tr key={index}>
+                                            <td>{index + 1}</td>
+                                            <td>{item.descripcion}</td>
+                                            <td>{item.cantidad}</td>
+                                            <td>{item.precioUnitario}</td>
+                                            <td>{item.precioTotal}</td>
+                                            <td className="text-center">
+                                                <Button variant="danger" onClick={() => handleDeleteItem(index)} disabled={isViewMode}>
+                                                    <FaTrash />
+                                                </Button>
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                                <tfoot>
+                                    <tr>
+                                        <td colSpan="4" className="text-end">Total General</td>
+                                        <td className="text-end">${cotizacionData.totalGeneral.toFixed(2)}</td>
+                                    </tr>
+                                </tfoot>
+                            </Table>
+                        </Card.Body>
+                    </Card>
 
                     {/* Sección: Observaciones */}
-                    <h5>Observaciones</h5>
-                    <Row>
-                        <Col md={12}>
+                    <Card className="mb-3">
+                        <Card.Header>Observaciones</Card.Header>
+                        <Card.Body>
                             <Form.Group className="mb-3" controlId="observaciones">
                                 <Form.Label>Observaciones</Form.Label>
                                 <Form.Control
@@ -319,11 +326,10 @@ const CotizacionModal = ({ show, handleClose, cotizacion, handleSubmit, isViewMo
                                     disabled={isViewMode}
                                 />
                             </Form.Group>
-                        </Col>
-                    </Row>
+                        </Card.Body>
+                    </Card>
                 </Modal.Body>
                 <Modal.Footer>
-                    
                     {!isViewMode && (
                         <Button variant="primary" type="submit">
                             {cotizacion && cotizacion._id ? <FaEdit /> : <FaSave />} {/* Icono de editar o guardar según el estado */}
