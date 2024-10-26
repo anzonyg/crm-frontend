@@ -37,11 +37,15 @@ const NavigationBar = () => {
             <NavDropdown title={<span><FaChartLine /> Seguimiento</span>} id="seguimiento-dropdown">
               <NavDropdown.Item as={Link} to="/followupContracts">Seguimiento Contratos</NavDropdown.Item>
               <NavDropdown.Item as={Link} to="/campanas">Gestión de Campañas</NavDropdown.Item>
+              <NavDropdown.Item as={Link} to="/reporte-campanas">Reporte de Campañas</NavDropdown.Item>
             </NavDropdown>
 
             {/* Soporte al Cliente */}
-            <Nav.Link as={Link} to="/ticketsSoporte"><FaHandshake /> Soporte al Cliente</Nav.Link>
-
+            <NavDropdown title={<span><FaHandshake /> Soporte</span>} id="soporte-dropdown">
+              <NavDropdown.Item as={Link} to="/ticketsSoporte">Soporte al Cliente</NavDropdown.Item>
+              <NavDropdown.Item as={Link} to="/reporte-tickets">Reporte de Tickets</NavDropdown.Item>
+            </NavDropdown>
+            
             {/* Inventarios */}
             <Nav.Link as={Link} to="/inventarios"><FaBoxes /> Inventarios</Nav.Link>
           </Nav>
