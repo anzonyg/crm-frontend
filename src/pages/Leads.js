@@ -1,8 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import { Table, Button, Container, Row, Col, Form, Badge, Pagination } from 'react-bootstrap';
-import { getLeads, createLead, updateLead, getLeadById, deleteLead } from '../services/leadService'; // Importa deleteLead
-import { FaEdit, FaTrash, FaPlus, FaEye } from 'react-icons/fa';
+import { getLeads, createLead, updateLead, getLeadById, deleteLead } from '../services/leadService'; 
+import { FaEdit, FaTrash, FaPlus, FaEye, FaFilePdf, FaFileExcel } from 'react-icons/fa';
 import LeadModal from '../components/LeadModal';
+import jsPDF from 'jspdf';
+import 'jspdf-autotable';
+import * as XLSX from 'xlsx'; 
+import { saveAs } from 'file-saver'; 
+import logoCrm from '../assets/logo_crm.jpg'; 
+import logoUmg from '../assets/logo_umg.jpg'; 
 
 const Leads = () => {
   const [leads, setLeads] = useState([]);
@@ -48,6 +54,21 @@ const Leads = () => {
     setShowModal(true);
   };
 
+  const handleDeleteClick = async (id) => {
+    if (window.confirm("¿Estás seguro de que quieres eliminar este lead?")) {
+      try {
+        await deleteLead(id);
+        fetchLeads(); 
+      } catch (error) {
+        console.error("Error al eliminar el lead:", error);
+      }
+    }
+  };
+
+  const handleClose = () => {
+    setShowModal(false);
+  };
+
   const handleChange = (e) => {
     setSelectedLead({ ...selectedLead, [e.target.name]: e.target.value });
   };
@@ -60,21 +81,6 @@ const Leads = () => {
     }
     setShowModal(false);
     fetchLeads();
-  };
-
-  const handleDeleteClick = async (id) => {
-    if (window.confirm("¿Estás seguro de que quieres eliminar este lead?")) {
-      try {
-        await deleteLead(id);
-        fetchLeads(); // Refrescar la lista de leads después de eliminar
-      } catch (error) {
-        console.error("Error al eliminar el lead:", error);
-      }
-    }
-  };
-
-  const handleClose = () => {
-    setShowModal(false);
   };
 
   const handleSearchChange = (e) => {
@@ -104,7 +110,7 @@ const Leads = () => {
 
   const handleItemsPerPageChange = (e) => {
     setItemsPerPage(parseInt(e.target.value));
-    setCurrentPage(1);  // Reset to the first page when items per page changes
+    setCurrentPage(1); 
   };
 
   const renderBadge = (estadoLead) => {
@@ -124,7 +130,50 @@ const Leads = () => {
     }
   };
 
-  // Logic for pagination
+  const handleGenerateReport = () => {
+    const doc = new jsPDF();
+    
+    doc.addImage(logoCrm, 'PNG', 10, 10, 40, 20);
+    doc.addImage(logoUmg, 'PNG', 160, 10, 40, 20);
+
+    doc.setFontSize(20);
+    doc.text('Leads', 105, 30, { align: 'center' });
+
+    const tableColumn = ["Nombre", "Empresa", "Correo Electrónico", "Teléfono", "Estado", "Fecha de Seguimiento"];
+    const tableRows = [];
+
+    currentItems.forEach(lead => {
+      const leadData = [
+        lead.nombre || 'Sin nombre',
+        lead.empresa || 'Sin empresa',
+        lead.correoElectronico || 'Sin correo',
+        lead.telefono || 'Sin teléfono',
+        lead.estadoLead || 'Sin estado',
+        formatDate(lead.fechaSeguimiento),
+      ];
+      tableRows.push(leadData);
+    });
+
+    doc.autoTable(tableColumn, tableRows, { startY: 40 });
+    doc.save('reporte_leads.pdf');
+  };
+
+  const handleGenerateExcel = () => {
+    const worksheet = XLSX.utils.json_to_sheet(filteredLeads.map(lead => ({
+      Nombre: lead.nombre || 'Sin nombre',
+      Empresa: lead.empresa || 'Sin empresa',
+      'Correo Electrónico': lead.correoElectronico || 'Sin correo',
+      Teléfono: lead.telefono || 'Sin teléfono',
+      Estado: lead.estadoLead || 'Sin estado',
+      'Fecha de Seguimiento': formatDate(lead.fechaSeguimiento),
+    })));
+
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Leads');
+
+    XLSX.writeFile(workbook, 'reporte_leads.xlsx');
+  };
+
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   const currentItems = filteredLeads.slice(indexOfFirstItem, indexOfLastItem);
@@ -134,11 +183,6 @@ const Leads = () => {
   return (
     <Container>
       <h1 className="mt-4">Leads</h1>
-      <p className="text-muted">
-        Los "Leads" son posibles clientes o contactos que han mostrado interés en tus productos o servicios.
-        Administrar los leads de manera efectiva te ayuda a convertir estos contactos en clientes y a seguir su progreso
-        a lo largo del proceso de ventas.
-      </p>
       <Row className="mb-3">
         <Col md={6}>
           <Form.Control
@@ -149,6 +193,12 @@ const Leads = () => {
           />
         </Col>
         <Col className="d-flex justify-content-end">
+          <Button variant="success" onClick={handleGenerateReport} className="me-2">
+            <FaFilePdf />
+          </Button>
+          <Button variant="info" onClick={handleGenerateExcel} className="me-2">
+            <FaFileExcel />
+          </Button>
           <Button variant="primary" onClick={handleAddClick}>
             <FaPlus /> Añadir Lead
           </Button>
@@ -194,8 +244,6 @@ const Leads = () => {
           ))}
         </tbody>
       </Table>
-
-      {/* Paginación */}
       <Row className="mt-4 align-items-center">
         <Col className="d-flex justify-content-center">
           <Pagination>
