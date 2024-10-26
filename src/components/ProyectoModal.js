@@ -22,7 +22,7 @@ const ProyectoModal = ({ show, handleClose, proyecto, handleChange, handleSubmit
         </Modal.Header>
         <Modal.Body>
           <Row>
-            <Col md={6}>
+            <Col md={4}> {/* Cambiado a 4 para un campo más pequeño */}
               <Form.Group className="mb-3" controlId="nombreProyecto">
                 <Form.Label>Nombre del Proyecto</Form.Label>
                 <Form.Control
@@ -36,7 +36,7 @@ const ProyectoModal = ({ show, handleClose, proyecto, handleChange, handleSubmit
                 />
               </Form.Group>
             </Col>
-            <Col md={6}>
+            <Col md={4}> {/* Cambiado a 4 para un campo más pequeño */}
               <Form.Group className="mb-3" controlId="cliente">
                 <Form.Label>Cliente</Form.Label>
                 <Form.Control
@@ -45,6 +45,20 @@ const ProyectoModal = ({ show, handleClose, proyecto, handleChange, handleSubmit
                   value={proyecto.cliente || ''}
                   onChange={handleChange}
                   placeholder="Ingrese el nombre del cliente"
+                  disabled={isViewMode}
+                  required
+                />
+              </Form.Group>
+            </Col>
+            <Col md={4}> {/* Cambiado a 4 para un campo más pequeño */}
+              <Form.Group className="mb-3" controlId="ingresosEstimados">
+                <Form.Label>Ingresos Estimados</Form.Label>
+                <Form.Control
+                  type="number"
+                  name="ingresosEstimados"
+                  value={proyecto.ingresosEstimados || ''}
+                  onChange={handleChange}
+                  placeholder="Ingrese los ingresos estimados"
                   disabled={isViewMode}
                   required
                 />
@@ -82,21 +96,7 @@ const ProyectoModal = ({ show, handleClose, proyecto, handleChange, handleSubmit
             </Col>
           </Row>
           <Row>
-            <Col md={6}>
-              <Form.Group className="mb-3" controlId="ingresosEstimados">
-                <Form.Label>Ingresos Estimados</Form.Label>
-                <Form.Control
-                  type="number"
-                  name="ingresosEstimados"
-                  value={proyecto.ingresosEstimados || ''}
-                  onChange={handleChange}
-                  placeholder="Ingrese los ingresos estimados"
-                  disabled={isViewMode}
-                  required
-                />
-              </Form.Group>
-            </Col>
-            <Col md={6}>
+            <Col md={12}>
               <Form.Group className="mb-3" controlId="estadoProyecto">
                 <Form.Label>Estado del Proyecto</Form.Label>
                 <Form.Select
@@ -119,7 +119,7 @@ const ProyectoModal = ({ show, handleClose, proyecto, handleChange, handleSubmit
             <Form.Label>Notas y Comentarios</Form.Label>
             <Form.Control
               as="textarea"
-              rows={3}
+              rows={4} // Aumentado el tamaño del textarea
               name="notasComentarios"
               value={proyecto.notasComentarios || ''}
               onChange={handleChange}

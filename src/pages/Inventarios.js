@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { Table, Button, Container, Row, Col, Form, Badge, Pagination } from 'react-bootstrap';
+import { Table, Button, Container, Row, Col, Form, Pagination } from 'react-bootstrap';
 import { getInventarios, createInventario, updateInventario, getInventarioById } from '../services/inventarioService.js';
-import { FaEdit, FaTrash, FaPlus, FaEye } from 'react-icons/fa';
+import { FaEdit, FaPlus, FaEye } from 'react-icons/fa';
 import InventarioModal from '../components/InventarioModal';
 
 import jsPDF from 'jspdf';

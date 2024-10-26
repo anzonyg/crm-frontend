@@ -19,7 +19,7 @@ const InventarioModal = ({ show, handleClose, inventario, handleChange, handleSu
         </Modal.Header>
         <Modal.Body>
           <Row>
-            <Col md={6}>
+            <Col md={4}> {/* Cambiado a 4 para un campo más pequeño */}
               <Form.Group className="mb-3" controlId="IDProducto">
                 <Form.Label>ID Producto</Form.Label>
                 <Form.Control
@@ -33,7 +33,7 @@ const InventarioModal = ({ show, handleClose, inventario, handleChange, handleSu
                 />
               </Form.Group>
             </Col>
-            <Col md={6}>
+            <Col md={4}> {/* Cambiado a 4 para un campo más pequeño */}
               <Form.Group className="mb-3" controlId="NombreProducto">
                 <Form.Label>Nombre Producto</Form.Label>
                 <Form.Control
@@ -47,9 +47,7 @@ const InventarioModal = ({ show, handleClose, inventario, handleChange, handleSu
                 />
               </Form.Group>
             </Col>
-          </Row>
-          <Row>
-            <Col md={6}>
+            <Col md={4}> {/* Cambiado a 4 para un campo más pequeño */}
               <Form.Group className="mb-3" controlId="Proveedor">
                 <Form.Label>Proveedor</Form.Label>
                 <Form.Control
@@ -63,6 +61,8 @@ const InventarioModal = ({ show, handleClose, inventario, handleChange, handleSu
                 />
               </Form.Group>
             </Col>
+          </Row>
+          <Row>
             <Col md={6}>
               <Form.Group className="mb-3" controlId="Precio">
                 <Form.Label>Precio</Form.Label>
@@ -77,8 +77,6 @@ const InventarioModal = ({ show, handleClose, inventario, handleChange, handleSu
                 />
               </Form.Group>
             </Col>
-          </Row>
-          <Row>
             <Col md={6}>
               <Form.Group className="mb-3" controlId="UnidadesDisponibles">
                 <Form.Label>Unidades Disponibles</Form.Label>
@@ -93,7 +91,9 @@ const InventarioModal = ({ show, handleClose, inventario, handleChange, handleSu
                 />
               </Form.Group>
             </Col>
-            <Col md={6}>
+          </Row>
+          <Row>
+            <Col md={12}> {/* Aumentado a 12 para ocupar todo el ancho */}
               <Form.Group className="mb-3" controlId="EstadoProducto">
                 <Form.Label>Estado del Producto</Form.Label>
                 <Form.Select

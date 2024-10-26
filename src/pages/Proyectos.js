@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Table, Button, Container, Row, Col, Form, Badge, Pagination } from 'react-bootstrap';
 import { getProyectos, createProyecto, updateProyecto, getProyectoById } from '../services/proyectoService.js';
-import { FaEdit, FaTrash, FaPlus, FaEye } from 'react-icons/fa';
+import { FaEdit, FaPlus, FaEye } from 'react-icons/fa';
 import ProyectoModal from '../components/ProyectoModal';
 
 // Importar jsPDF y autoTable para reportes

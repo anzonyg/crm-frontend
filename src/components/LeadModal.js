@@ -1,6 +1,6 @@
 import React from 'react';
 import { Modal, Button, Form, Row, Col } from 'react-bootstrap';
-import { FaTimes, FaSave, FaEdit } from 'react-icons/fa'; // Importamos los iconos necesarios
+import { FaSave, FaEdit } from 'react-icons/fa'; // Importamos los iconos necesarios
 
 const LeadModal = ({ show, handleClose, lead, handleChange, handleSubmit, isViewMode }) => {
   const today = new Date().toISOString().split('T')[0]; // Formato YYYY-MM-DD

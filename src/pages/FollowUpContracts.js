@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { Table, Button, Container, Row, Col, Form, Badge, Pagination } from 'react-bootstrap';
 import { getContratos, createContrato, updateContrato, getContratoById } from '../services/contratoService.js';
-import { FaEdit, FaTrash, FaPlus, FaEye } from 'react-icons/fa';
+import { FaEdit, FaPlus, FaEye } from 'react-icons/fa';
 import FollowUpContractsModal from '../components/FollowUpContractsModal';
-import ContratoModal from '../components/ContratoModal';
 
 const Contratos = () => {
   const [contratos, setContratos] = useState([]);
@@ -14,11 +13,11 @@ const Contratos = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
+  const [followUpData, setFollowUpData] = useState([]); // Estado para los datos de seguimiento
 
   const fetchContratos = async () => {
     try {
       const response = await getContratos();
-      // Filtrar contratos por estado "Cerrado" o "Contactado"
       const filtered = response.data.filter(
         contrato => contrato.estadoContrato === 'Cerrado' || contrato.estadoContrato === 'Contactado'
       );
@@ -63,6 +62,9 @@ const Contratos = () => {
     } else {
       await createContrato(selectedContrato);
     }
+
+    // Agregar el nuevo seguimiento a followUpData
+    setFollowUpData((prevData) => [...prevData, selectedContrato]);
     setShowModal(false);
     fetchContratos();
   };
@@ -74,7 +76,6 @@ const Contratos = () => {
   const handleSearchChange = (e) => {
     const searchValue = e.target.value.toLowerCase();
     setSearchTerm(searchValue);
-
     const filtered = contratos.filter((contrato) =>
       (contrato.nombre ? contrato.nombre.toLowerCase() : '').includes(searchValue) ||
       (contrato.empresa ? contrato.empresa.toLowerCase() : '').includes(searchValue) ||
@@ -82,7 +83,6 @@ const Contratos = () => {
       (contrato.telefono ? contrato.telefono.toLowerCase() : '').includes(searchValue) ||
       (contrato.estadoContrato ? contrato.estadoContrato.toLowerCase() : '').includes(searchValue)
     );
-
     setFilteredContratos(filtered);
   };
 
@@ -118,7 +118,6 @@ const Contratos = () => {
     }
   };
 
-  // Logic for pagination
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   const currentItems = filteredContratos.slice(indexOfFirstItem, indexOfLastItem);
@@ -183,30 +182,64 @@ const Contratos = () => {
           ))}
         </tbody>
       </Table>
-      
-      {/* Paginación */}
-      <Row className="mt-4 align-items-center">
-        <Col className="d-flex justify-content-center">
-          <Pagination>
-            <Pagination.First onClick={() => handlePageChange(1)} disabled={currentPage === 1} />
-            <Pagination.Prev onClick={() => handlePageChange(currentPage - 1)} disabled={currentPage === 1} />
-            {[...Array(totalPages)].map((_, i) => (
-              <Pagination.Item key={i + 1} active={i + 1 === currentPage} onClick={() => handlePageChange(i + 1)}>
-                {i + 1}
-              </Pagination.Item>
-            ))}
-            <Pagination.Next onClick={() => handlePageChange(currentPage + 1)} disabled={currentPage === totalPages} />
-            <Pagination.Last onClick={() => handlePageChange(totalPages)} disabled={currentPage === totalPages} />
-          </Pagination>
-        </Col>
-        <Col md={3} className="d-flex justify-content-end">
-          <Form.Select value={itemsPerPage} onChange={handleItemsPerPageChange}>
-            <option value="10">10 por página</option>
-            <option value="20">20 por página</option>
-            <option value="30">30 por página</option>
-          </Form.Select>
-        </Col>
-      </Row>
+
+      {/* Título y Segunda tabla de seguimiento */}
+      {followUpData.length > 0 && (
+        <>
+          <h2 className="mt-4">Seguimiento de Contratos</h2>
+          <Table striped bordered hover className="mt-2">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Nombre</th>
+                <th>Empresa</th>
+                <th>Correo Electrónico</th>
+                <th>Teléfono</th>
+                <th>Fecha de Contacto Inicial</th>
+                <th>Fecha de Seguimiento</th>
+                <th>Razón</th>
+                <th>Soluciones</th>
+                <th className="text-center">Acciones</th>
+              </tr>
+            </thead>
+            <tbody>
+              {followUpData.map((followUp, index) => (
+                <tr key={index}>
+                  <td>{index + 1}</td>
+                  <td>{followUp.nombre || 'Sin nombre'}</td>
+                  <td>{followUp.empresa || 'Sin empresa'}</td>
+                  <td>{followUp.correoElectronico || 'Sin correo'}</td>
+                  <td>{followUp.telefono || 'Sin teléfono'}</td>
+                  <td>{followUp.fechaContactoInicial ? formatDate(followUp.fechaContactoInicial) : 'No asignada'}</td>
+                  <td>{followUp.fechaSeguimiento ? formatDate(followUp.fechaSeguimiento) : 'No asignada'}</td>
+                  <td>{followUp.razon || 'Sin razón'}</td>
+                  <td>{followUp.soluciones || 'Sin soluciones'}</td>
+                  <td className="text-center">
+                    <div className="d-flex justify-content-center">
+                      <Button variant="info" className="me-2" onClick={() => handleEditClick(followUp._id)}>
+                        <FaEdit />
+                      </Button>
+                      <Button variant="secondary" className="me-2" onClick={() => handleViewClick(followUp._id)}>
+                        <FaEye />
+                      </Button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </Table>
+        </>
+      )}
+
+      <Pagination>
+        <Pagination.Prev onClick={() => handlePageChange(currentPage - 1)} disabled={currentPage === 1} />
+        {[...Array(totalPages)].map((_, index) => (
+          <Pagination.Item key={index + 1} active={index + 1 === currentPage} onClick={() => handlePageChange(index + 1)}>
+            {index + 1}
+          </Pagination.Item>
+        ))}
+        <Pagination.Next onClick={() => handlePageChange(currentPage + 1)} disabled={currentPage === totalPages} />
+      </Pagination>
 
       <FollowUpContractsModal
         show={showModal}

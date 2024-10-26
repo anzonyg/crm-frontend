@@ -37,7 +37,7 @@ const ContratoModal = ({ show, handleClose, contrato, handleChange, handleSubmit
         </Modal.Header>
         <Modal.Body>
           <Row>
-            <Col md={6}>
+            <Col md={4}>
               <Form.Group className="mb-3" controlId="nombre">
                 <Form.Label>Nombre</Form.Label>
                 <Form.Control
@@ -51,7 +51,7 @@ const ContratoModal = ({ show, handleClose, contrato, handleChange, handleSubmit
                 />
               </Form.Group>
             </Col>
-            <Col md={6}>
+            <Col md={4}>
               <Form.Group className="mb-3" controlId="empresa">
                 <Form.Label>Empresa</Form.Label>
                 <Form.Control
@@ -98,7 +98,7 @@ const ContratoModal = ({ show, handleClose, contrato, handleChange, handleSubmit
             </Col>
           </Row>
           <Row>
-            <Col md={6}>
+            <Col md={4}>
               <Form.Group className="mb-3" controlId="fechaContacto">
                 <Form.Label>Fecha de Inicio de Contrato</Form.Label>
                 <Form.Control
@@ -113,7 +113,7 @@ const ContratoModal = ({ show, handleClose, contrato, handleChange, handleSubmit
                 />
               </Form.Group>
             </Col>
-            <Col md={6}>
+            <Col md={4}>
               <Form.Group className="mb-3" controlId="fechaSeguimiento">
                 <Form.Label>Fecha de Cierre</Form.Label>
                 <Form.Control
@@ -128,7 +128,7 @@ const ContratoModal = ({ show, handleClose, contrato, handleChange, handleSubmit
             </Col>
           </Row>
           <Row>
-            <Col md={6}>
+            <Col md={4}>
               <Form.Group className="mb-3" controlId="fuenteContrato">
                 <Form.Label>Fuente del Contrato</Form.Label>
                 <Form.Control
@@ -142,7 +142,7 @@ const ContratoModal = ({ show, handleClose, contrato, handleChange, handleSubmit
                 />
               </Form.Group>
             </Col>
-            <Col md={6}>
+            <Col md={4}>
               <Form.Group className="mb-3" controlId="estadoContrato">
                 <Form.Label>Estado del Contrato</Form.Label>
                 <Form.Select
@@ -185,7 +185,7 @@ const ContratoModal = ({ show, handleClose, contrato, handleChange, handleSubmit
             <Form.Label>Notas y Comentarios</Form.Label>
             <Form.Control
               as="textarea"
-              rows={3}
+              rows={5} // Aumenté el tamaño del textarea
               name="notasComentarios"
               value={contrato.notasComentarios || ''}
               onChange={handleChange}

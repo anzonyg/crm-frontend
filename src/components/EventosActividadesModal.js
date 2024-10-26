@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Modal, Button, Form, Row, Col, Table, InputGroup } from 'react-bootstrap';
-import { FaTimes, FaSave, FaEdit, FaTrash, FaPlus } from 'react-icons/fa';
+import { FaSave, FaEdit, FaTrash, FaPlus } from 'react-icons/fa';
 import { updateEventoActividad, createEventoActividad } from '../services/eventosActividadesService';
 
 const EventosActividadesModal = ({ show, handleClose, evento, handleSubmit, isViewMode }) => {

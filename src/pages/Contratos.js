@@ -1,12 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import { Table, Button, Container, Row, Col, Form, Badge, Pagination } from 'react-bootstrap';
 import { getContratos, createContrato, updateContrato, getContratoById } from '../services/contratoService.js';
-import { FaEdit, FaTrash, FaPlus, FaEye } from 'react-icons/fa';
+import { FaEdit, FaPlus, FaEye, FaFileExcel, FaFilePdf } from 'react-icons/fa';
 import ContratoModal from '../components/ContratoModal';
-
-//
 import jsPDF from 'jspdf';
-import 'jspdf-autotable'; // Para manejar tablas automáticamente
+import 'jspdf-autotable';
+import logoCrm from '../assets/logo_crm.jpg'; // Asegúrate de que la ruta sea correcta
+import logoUmg from '../assets/logo_umg.jpg'; // Asegúrate de que la ruta sea correcta
+import * as XLSX from 'xlsx'; // Importa la biblioteca para Excel
+import { saveAs } from 'file-saver'; // Importa la biblioteca para guardar archivos
 
 const Contratos = () => {
   const [contratos, setContratos] = useState([]);
@@ -18,16 +20,20 @@ const Contratos = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
 
-  //
   const handleGenerateReport = () => {
     const doc = new jsPDF();
-  
+    
+    // Agregar imágenes
+    doc.addImage(logoCrm, 'PNG', 10, 10, 40, 20); // Logo CRM en la esquina superior izquierda
+    doc.addImage(logoUmg, 'PNG', 160, 10, 40, 20); // Logo UMG en la esquina superior derecha
+
+    // Agregar el título
     doc.setFontSize(20);
-    doc.text('Reporte de Contratos', 14, 22);
-  
+    doc.text('Contratos', 105, 30, { align: 'center' }); // Título centrado
+
     const tableColumn = ["Nombre", "Empresa", "Correo Electrónico", "Teléfono", "Estado", "Fecha de Inicio de Contrato"];
     const tableRows = [];
-  
+
     currentItems.forEach(contrato => {
       const contratoData = [
         contrato.nombre || 'Sin nombre',
@@ -39,11 +45,27 @@ const Contratos = () => {
       ];
       tableRows.push(contratoData);
     });
-  
-    doc.autoTable(tableColumn, tableRows, { startY: 30 });
+
+    doc.autoTable(tableColumn, tableRows, { startY: 40 }); // Cambia startY para que la tabla comience después del título
     doc.save('reporte_contratos.pdf');
   };
-  
+
+  const handleGenerateExcel = () => {
+    const worksheet = XLSX.utils.json_to_sheet(filteredContratos.map(contrato => ({
+      Nombre: contrato.nombre || 'Sin nombre',
+      Empresa: contrato.empresa || 'Sin empresa',
+      'Correo Electrónico': contrato.correoElectronico || 'Sin correo',
+      Teléfono: contrato.telefono || 'Sin teléfono',
+      Estado: contrato.estadoContrato || 'Sin estado',
+      'Fecha de Inicio de Contrato': formatDate(contrato.fechaSeguimiento),
+    })));
+
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Contratos');
+
+    // Guarda el archivo Excel
+    XLSX.writeFile(workbook, 'reporte_contratos.xlsx');
+  };
 
   const fetchContratos = async () => {
     try {
@@ -156,7 +178,7 @@ const Contratos = () => {
     <Container>
       <h1 className="mt-4">Contratos</h1>
       <p className="text-muted">
-      Un contrato de compraventa es un acuerdo legal entre una empresa vendedora y una compradora, donde se establecen los términos y condiciones para la compra de productos o servicios. En este contrato, la empresa vendedora se compromete a entregar los productos acordados, y la empresa compradora se compromete a pagar el precio estipulado, cumpliendo con las demás obligaciones especificadas, como plazos de entrega y condiciones de pago.
+        Un contrato de compraventa es un acuerdo legal entre una empresa vendedora y una compradora, donde se establecen los términos y condiciones para la compra de productos o servicios. En este contrato, la empresa vendedora se compromete a entregar los productos acordados, y la empresa compradora se compromete a pagar el precio estipulado, cumpliendo con las demás obligaciones especificadas, como plazos de entrega y condiciones de pago.
       </p>
       <Row className="mb-3">
         <Col md={6}>
@@ -168,9 +190,12 @@ const Contratos = () => {
           />
         </Col>
         <Col className="d-flex justify-content-end">
-        <Button variant="success" onClick={handleGenerateReport} className="me-2">
-      Generar Reporte
-    </Button>
+          <Button variant="success" onClick={handleGenerateReport} className="me-2">
+            <FaFilePdf /> {/* Icono PDF */}
+          </Button>
+          <Button variant="info" onClick={handleGenerateExcel} className="me-2">
+            <FaFileExcel /> {/* Icono Excel */}
+          </Button>
           <Button variant="primary" onClick={handleAddClick}>
             <FaPlus /> Añadir Contrato
           </Button>
@@ -200,44 +225,36 @@ const Contratos = () => {
               <td>{renderBadge(contrato.estadoContrato)}</td>
               <td>{formatDate(contrato.fechaSeguimiento)}</td>
               <td className="text-center">
-                <div className="d-flex justify-content-center">
-                  <Button variant="info" className="me-2" onClick={() => handleEditClick(contrato._id)}>
-                    <FaEdit />
-                  </Button>
-                  <Button variant="secondary" className="me-2" onClick={() => handleViewClick(contrato._id)}>
-                    <FaEye />
-                  </Button>
-                </div>
+                <Button variant="info" onClick={() => handleViewClick(contrato._id)} className="me-1">
+                  <FaEye />
+                </Button>
+                <Button variant="warning" onClick={() => handleEditClick(contrato._id)}>
+                  <FaEdit />
+                </Button>
               </td>
             </tr>
           ))}
         </tbody>
       </Table>
-      
-      {/* Paginación */}
-      <Row className="mt-4 align-items-center">
-        <Col className="d-flex justify-content-center">
+      <Row>
+        <Col md={6}>
           <Pagination>
-            <Pagination.First onClick={() => handlePageChange(1)} disabled={currentPage === 1} />
-            <Pagination.Prev onClick={() => handlePageChange(currentPage - 1)} disabled={currentPage === 1} />
-            {[...Array(totalPages)].map((_, i) => (
-              <Pagination.Item key={i + 1} active={i + 1 === currentPage} onClick={() => handlePageChange(i + 1)}>
-                {i + 1}
+            {Array.from({ length: totalPages }, (_, index) => (
+              <Pagination.Item key={index + 1} active={index + 1 === currentPage} onClick={() => handlePageChange(index + 1)}>
+                {index + 1}
               </Pagination.Item>
             ))}
-            <Pagination.Next onClick={() => handlePageChange(currentPage + 1)} disabled={currentPage === totalPages} />
-            <Pagination.Last onClick={() => handlePageChange(totalPages)} disabled={currentPage === totalPages} />
           </Pagination>
         </Col>
-        <Col md={3} className="d-flex justify-content-end">
-          <Form.Select value={itemsPerPage} onChange={handleItemsPerPageChange}>
-            <option value="10">10 por página</option>
-            <option value="20">20 por página</option>
-            <option value="30">30 por página</option>
+        <Col md={6}>
+          <Form.Select value={itemsPerPage} onChange={handleItemsPerPageChange} className="float-end">
+            <option value={5}>5 por página</option>
+            <option value={10}>10 por página</option>
+            <option value={20}>20 por página</option>
+            <option value={50}>50 por página</option>
           </Form.Select>
         </Col>
       </Row>
-
       <ContratoModal
         show={showModal}
         handleClose={handleClose}

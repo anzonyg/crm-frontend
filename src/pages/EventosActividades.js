@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Table, Button, Container, Row, Col, Form, Badge, Pagination } from 'react-bootstrap';
+import { Table, Button, Container, Row, Col, Form, Pagination } from 'react-bootstrap';
 import { getEventosActividades, createEventoActividad, updateEventoActividad, getEventoActividadById, deleteEventoActividad } from '../services/eventosActividadesService'; // Importa deleteEventoActividad
 import { FaEdit, FaTrash, FaPlus, FaEye } from 'react-icons/fa';
 import EventosActividadesModal from '../components/EventosActividadesModal';
