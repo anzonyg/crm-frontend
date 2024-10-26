@@ -30,7 +30,7 @@ export const createGestionPedido = async (pedido) => {
         const response = await axios.post(API_URL, pedido);
         return response.data;
     } catch (error) {
-        console.error("Error al crear el pedido:", error.response || error.message);
+        console.error("Error al crear el pedido:", error.response?.data || error.message);
         throw error;
     }
 };

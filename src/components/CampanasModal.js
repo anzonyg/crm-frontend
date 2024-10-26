@@ -249,6 +249,7 @@ const CampanasModal = ({ show, handleClose, campanas, isViewMode }) => {
                   type="text"
                   name="costeReal"
                   value={campanasData.costeReal ? `Q. ${campanasData.costeReal}` : ''}
+                  
                   onChange={(e) => {
                     const newValue = e.target.value.replace(/[^0-9]/g, ''); // Solo números
                     handleChange({ target: { name: 'costeReal', value: newValue } });

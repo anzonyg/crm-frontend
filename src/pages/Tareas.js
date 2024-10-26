@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { Table, Button, Container, Row, Col, Form, Pagination } from 'react-bootstrap';
 import { getTareas, createTarea, updateTarea, deleteTarea, getTareaById } from '../services/tareaService';
-import { FaEdit, FaTrash, FaPlus, FaEye, FaFileExcel, FaFilePdf } from 'react-icons/fa'; // Iconos para exportar
+import { FaEdit, FaTrash, FaPlus, FaEye, FaFileExcel, FaFilePdf } from 'react-icons/fa';
 import TareaModal from '../components/TareaModal';
-import * as XLSX from 'xlsx'; // Librería para exportar Excel
-import jsPDF from 'jspdf'; // Librería para exportar PDF
-import html2canvas from 'html2canvas'; // Para capturar HTML y exportarlo a PDF
+import * as XLSX from 'xlsx';  // Librería para exportar Excel
+import jsPDF from 'jspdf';  // Librería para exportar PDF
+import html2canvas from 'html2canvas';  // Para capturar HTML y exportarlo a PDF
 
 const Tareas = () => {
     const [tareas, setTareas] = useState([]);
@@ -15,10 +15,11 @@ const Tareas = () => {
     const [isViewMode, setIsViewMode] = useState(false);
     const [searchTerm, setSearchTerm] = useState('');
     const [currentPage, setCurrentPage] = useState(1);
-    const [itemsPerPage, setItemsPerPage] = useState(10); // Número de elementos por página
+    const [itemsPerPage, setItemsPerPage] = useState(10);
 
+    // Obtener las tareas al montar el componente
     useEffect(() => {
-        fetchTareas();  // Cargamos las tareas al montar el componente
+        fetchTareas();
     }, []);
 
     // Obtener las tareas desde el backend
@@ -36,15 +37,15 @@ const Tareas = () => {
 
     // Función para exportar a Excel
     const exportToExcel = () => {
-        const worksheet = XLSX.utils.json_to_sheet(filteredTareas);  // Convertimos las tareas filtradas a Excel
+        const worksheet = XLSX.utils.json_to_sheet(filteredTareas);
         const workbook = XLSX.utils.book_new();
         XLSX.utils.book_append_sheet(workbook, worksheet, 'Tareas');
-        XLSX.writeFile(workbook, 'tareas.xlsx');  // Guardamos el archivo Excel
+        XLSX.writeFile(workbook, 'tareas.xlsx');
     };
 
     // Función para exportar a PDF
     const exportToPDF = () => {
-        const input = document.getElementById('tareasTable');  // Capturamos la tabla por su ID
+        const input = document.getElementById('tareasTable');
         html2canvas(input).then((canvas) => {
             const imgData = canvas.toDataURL('image/png');
             const pdf = new jsPDF();
@@ -63,25 +64,11 @@ const Tareas = () => {
                 pdf.addImage(imgData, 'PNG', 5, position, imgWidth, imgHeight);
                 heightLeft -= pageHeight;
             }
-            pdf.save('tareas.pdf');  // Guardamos el archivo PDF
+            pdf.save('tareas.pdf');
         });
     };
 
-    // Función para asignar clase según estado
-    const getBadgeClass = (estado) => {
-        switch (estado) {
-            case 'Pendiente':
-                return 'badge bg-warning text-dark'; // Amarillo para Pendiente
-            case 'Completada':
-                return 'badge bg-success'; // Verde para Completada
-            case 'Sin estado':
-                return 'badge bg-secondary'; // Gris para Sin estado
-            default:
-                return 'badge bg-secondary'; // Default
-        }
-    };
-
-    // Filtrado de tareas según el término de búsqueda
+    // Filtrado de tareas
     const handleSearchChange = (e) => {
         const searchValue = e.target.value.toLowerCase();
         setSearchTerm(searchValue);
@@ -91,72 +78,86 @@ const Tareas = () => {
             (tarea.estado ? tarea.estado.toLowerCase() : '').includes(searchValue)
         );
         setFilteredTareas(filtered);
-        setCurrentPage(1); // Reiniciar a la primera página después del filtro
+        setCurrentPage(1);  // Reiniciar a la primera página después del filtro
     };
 
-    // Guardar o actualizar la tarea
+    // Guardar o actualizar tarea
     const handleSubmit = async () => {
-        if (selectedTarea._id) {
-            await updateTarea(selectedTarea._id, selectedTarea);
-        } else {
-            await createTarea(selectedTarea);
+        try {
+            if (selectedTarea._id) {
+                await updateTarea(selectedTarea._id, selectedTarea);
+            } else {
+                await createTarea(selectedTarea);
+            }
+            setShowModal(false);
+            fetchTareas();  // Recargar tareas después de actualizar/crear
+        } catch (error) {
+            console.error('Error al guardar o actualizar la tarea:', error);
         }
-        setShowModal(false);
-        fetchTareas();  // Recargamos las tareas después de actualizar/crear
     };
 
+    // Cerrar el modal
     const handleCloseModal = () => {
         setShowModal(false);
-        fetchTareas(); // Recargar la lista de tareas después de cerrar el modal
+        fetchTareas();
     };
 
-    // Editar tarea seleccionada
+    // Editar tarea
     const handleEditClick = async (id) => {
-        const tareaData = await getTareaById(id);
-        setSelectedTarea(tareaData);
-        setIsViewMode(false);
-        setShowModal(true);
-    };
-
-    // Ver tarea seleccionada
-    const handleViewClick = async (id) => {
-        const tareaData = await getTareaById(id);
-        setSelectedTarea(tareaData);
-        setIsViewMode(true);
-        setShowModal(true);
-    };
-
-    // Eliminar tarea seleccionada
-    const handleDeleteClick = async (id) => {
-        if (window.confirm('¿Estás seguro de que deseas eliminar esta tarea?')) {
-            await deleteTarea(id);
-            fetchTareas(); // Recargar la lista después de eliminar
+        try {
+            const tareaData = await getTareaById(id);
+            setSelectedTarea(tareaData);
+            setIsViewMode(false);
+            setShowModal(true);
+        } catch (error) {
+            console.error('Error al obtener la tarea:', error);
         }
     };
 
-    // Paginación - Cambiar la página
+    // Ver tarea
+    const handleViewClick = async (id) => {
+        try {
+            const tareaData = await getTareaById(id);
+            setSelectedTarea(tareaData);
+            setIsViewMode(true);
+            setShowModal(true);
+        } catch (error) {
+            console.error('Error al obtener la tarea:', error);
+        }
+    };
+
+    // Eliminar tarea
+    const handleDeleteClick = async (id) => {
+        if (window.confirm('¿Estás seguro de que deseas eliminar esta tarea?')) {
+            try {
+                await deleteTarea(id);
+                fetchTareas();
+            } catch (error) {
+                console.error('Error al eliminar la tarea:', error);
+            }
+        }
+    };
+
+    // Paginación
+    const indexOfLastItem = currentPage * itemsPerPage;
+    const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+    const currentItems = filteredTareas.slice(indexOfFirstItem, indexOfLastItem);
+    const totalPages = Math.ceil(filteredTareas.length / itemsPerPage);
+
     const handlePageChange = (pageNumber) => {
         setCurrentPage(pageNumber);
     };
 
-    // Paginación - Obtener los elementos de la página actual
-    const indexOfLastItem = currentPage * itemsPerPage;
-    const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-    const currentItems = filteredTareas.slice(indexOfFirstItem, indexOfLastItem);
-
-    const totalPages = Math.ceil(filteredTareas.length / itemsPerPage);
-
-    // Cambio en el número de elementos por página
     const handleItemsPerPageChange = (e) => {
         setItemsPerPage(parseInt(e.target.value));
-        setCurrentPage(1); // Reiniciar a la primera página
+        setCurrentPage(1);
     };
 
     return (
         <Container>
             <h1 className="mt-4">Gestión de Tareas</h1>
             <p className="text-muted">
-                La "Gestión de Tareas" permite llevar un control de las actividades asignadas a diferentes responsables. Gestionarlas correctamente ayuda a mejorar la eficiencia y el seguimiento de los procesos.
+                La "Gestión de Tareas" permite llevar un control de las tareas asignadas y su estado. Gestionarlas correctamente ayuda a mejorar el flujo de trabajo.
             </p>
             <Row className="mb-3">
                 <Col md={6}>
@@ -172,23 +173,21 @@ const Tareas = () => {
                         <FaPlus /> Añadir Tarea
                     </Button>
                     <Button variant="success" className="ms-2" onClick={exportToExcel}>
-                        <FaFileExcel /> {/* Ícono para exportar a Excel */}
+                        <FaFileExcel />
                     </Button>
                     <Button variant="danger" className="ms-2" onClick={exportToPDF}>
-                        <FaFilePdf /> {/* Ícono para exportar a PDF */}
+                        <FaFilePdf />
                     </Button>
                 </Col>
             </Row>
-            <Table striped bordered hover id="tareasTable"> {/* Agregamos ID para exportar a PDF */}
+            <Table striped bordered hover id="tareasTable">
                 <thead>
                     <tr>
                         <th>#</th>
                         <th>Título</th>
                         <th>Responsable</th>
                         <th>Estado</th>
-                        <th>Fecha Inicio</th>
-                        <th>Fecha Fin</th>
-                        <th className="text-center">Acciones</th> {/* Aquí está la columna de acciones */}
+                        <th className="text-center">Acciones</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -198,13 +197,11 @@ const Tareas = () => {
                             <td>{tarea.titulo || 'Sin título'}</td>
                             <td>{tarea.responsable || 'Sin responsable'}</td>
                             <td>
-                                <span className={getBadgeClass(tarea.estado)} style={{ padding: '5px', borderRadius: '5px' }}>
+                                <span className="badge bg-info" style={{ padding: '5px', borderRadius: '5px' }}>
                                     {tarea.estado || 'Sin estado'}
                                 </span>
                             </td>
-                            <td>{tarea.fechaInicio || 'No asignada'}</td>
-                            <td>{tarea.fechaFin || 'No asignada'}</td>
-                            <td className="text-center"> {/* Columna de Acciones */}
+                            <td className="text-center">
                                 <div className="d-flex justify-content-center">
                                     <Button variant="info" className="me-2" onClick={() => handleEditClick(tarea._id)}>
                                         <FaEdit />

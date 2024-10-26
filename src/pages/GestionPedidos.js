@@ -3,9 +3,14 @@ import { Table, Button, Container, Row, Col, Form, Pagination } from 'react-boot
 import { getGestionPedidos, createGestionPedido, updateGestionPedido, deleteGestionPedido, getGestionPedidoById } from '../services/pedidoService';
 import { FaEdit, FaTrash, FaPlus, FaEye, FaFileExcel, FaFilePdf } from 'react-icons/fa';
 import GestionPedidosModal from '../components/GestionPedidosModal';
+import ExportModal from '../components/ExportModal';
 import * as XLSX from 'xlsx';
 import jsPDF from 'jspdf';
-import html2canvas from 'html2canvas';
+import 'jspdf-autotable'; // Asegúrate de que esta librería esté instalada
+
+// Importa las imágenes desde el directorio público (donde ya las tienes)
+import logoDerecho from '../assets/logoDerecho.png';
+import logoIzquierdo from '../assets/logoIzquierdo.png';
 
 const GestionPedidos = () => {
     const [pedidos, setPedidos] = useState([]);
@@ -16,6 +21,8 @@ const GestionPedidos = () => {
     const [searchTerm, setSearchTerm] = useState('');
     const [currentPage, setCurrentPage] = useState(1);
     const [itemsPerPage, setItemsPerPage] = useState(10);
+    const [showExportModal, setShowExportModal] = useState(false);
+    const [exportFilter, setExportFilter] = useState('all'); // Filtro de exportación
 
     useEffect(() => {
         fetchPedidos();
@@ -29,11 +36,23 @@ const GestionPedidos = () => {
                 setFilteredPedidos(pedidosData);
             }
         } catch (error) {
-            console.error('Error al obtener los pedidos:', error);
+            console.error('Error al obtener los pedidos:', error.response?.data?.mensaje || error.message);
         }
     };
 
-    const exportToExcel = () => {
+    const handleExportConfirm = (type, selectedFilter) => {
+        let filtered = pedidos;
+        if (selectedFilter !== 'all') {
+            filtered = pedidos.filter((pedido) => pedido.estado === selectedFilter); // Filtrar según el estado seleccionado
+        }
+        if (type === 'excel') {
+            exportToExcel(filtered);
+        } else if (type === 'pdf') {
+            exportToPDF(filtered, "Usuario");
+        }
+    };
+
+    const exportToExcel = (filteredPedidos) => {
         const exportData = filteredPedidos.map(pedido => ({
             ...pedido,
             'Total Pedido': formatCurrency(pedido.totalPedido)
@@ -45,28 +64,51 @@ const GestionPedidos = () => {
         XLSX.writeFile(workbook, 'pedidos.xlsx');
     };
 
-    const exportToPDF = () => {
-        const input = document.getElementById('pedidosTable');
-        html2canvas(input).then((canvas) => {
-            const imgData = canvas.toDataURL('image/png');
-            const pdf = new jsPDF();
-            const imgWidth = 200;
-            const pageHeight = pdf.internal.pageSize.height;
-            const imgHeight = (canvas.height * imgWidth) / canvas.width;
-            let heightLeft = imgHeight;
-            let position = 0;
+    const exportToPDF = (filteredPedidos, usuario) => {
+        const pdf = new jsPDF();
 
-            pdf.addImage(imgData, 'PNG', 5, 5, imgWidth, imgHeight);
-            heightLeft -= pageHeight;
+        // Usa las imágenes importadas
+        pdf.addImage(logoIzquierdo, 'PNG', 10, 5, 30, 30); // Logo izquierdo
+        pdf.addImage(logoDerecho, 'PNG', 170, 5, 30, 30); // Logo derecho
 
-            while (heightLeft >= 0) {
-                position = heightLeft - imgHeight;
-                pdf.addPage();
-                pdf.addImage(imgData, 'PNG', 5, position, imgWidth, imgHeight);
-                heightLeft -= pageHeight;
-            }
-            pdf.save('pedidos.pdf');
+        pdf.setFontSize(12);
+        pdf.text('CRM', 105, 10, { align: 'center' });
+        pdf.text('UNIVERSIDAD MARIANO GALVEZ', 105, 20, { align: 'center' });
+
+        const tableColumn = ["#", "Cliente", "Estado", "Prioridad", "Método de Entrega", "Fecha de Entrega", "Total"];
+        const tableRows = [];
+        let totalReporte = 0;
+
+        filteredPedidos.forEach((pedido, index) => {
+            const pedidoData = [
+                index + 1,
+                pedido.cliente,
+                pedido.estado,
+                pedido.prioridad,
+                pedido.metodoEntrega,
+                pedido.fechaEntrega ? new Date(pedido.fechaEntrega).toLocaleDateString() : 'Sin fecha',
+                formatCurrency(pedido.totalPedido)
+            ];
+            tableRows.push(pedidoData);
+            totalReporte += pedido.totalPedido;
         });
+
+        pdf.autoTable({
+            head: [tableColumn],
+            body: tableRows,
+            startY: 40,
+            theme: 'grid',
+            headStyles: { fillColor: [22, 160, 133] },
+            styles: { fontSize: 10, cellPadding: 4 },
+            margin: { top: 10 },
+        });
+
+        pdf.setFontSize(12);
+        pdf.text(`Total del Reporte: ${formatCurrency(totalReporte)}`, 14, pdf.lastAutoTable.finalY + 10);
+        pdf.setFontSize(10);
+        pdf.text(`Usuario: ${usuario}`, 14, pdf.lastAutoTable.finalY + 20);
+
+        pdf.save('pedidos.pdf');
     };
 
     const handleSearchChange = (e) => {
@@ -85,11 +127,7 @@ const GestionPedidos = () => {
     const handleSubmit = async (pedidoData) => {
         try {
             if (selectedPedido && selectedPedido._id) {
-                // Editar pedido existente
                 const updatedPedido = await updateGestionPedido(selectedPedido._id, pedidoData);
-                console.log("Pedido actualizado:", updatedPedido);
-
-                // Actualiza la lista local de pedidos y filteredPedidos
                 setPedidos((prevPedidos) =>
                     prevPedidos.map((pedido) =>
                         pedido._id === updatedPedido._id ? updatedPedido : pedido
@@ -101,19 +139,14 @@ const GestionPedidos = () => {
                     )
                 );
             } else {
-                // Crear nuevo pedido
                 const newPedido = await createGestionPedido(pedidoData);
-                console.log("Nuevo pedido creado:", newPedido);
-
-                // Añadir nuevo pedido a la lista
                 setPedidos((prevPedidos) => [...prevPedidos, newPedido]);
                 setFilteredPedidos((prevPedidos) => [...prevPedidos, newPedido]);
             }
-
-            setShowModal(false); // Cierra el modal después de guardar
-            setSelectedPedido(null); // Limpia el pedido seleccionado
+            setShowModal(false);
+            setSelectedPedido(null);
         } catch (error) {
-            console.error('Error al guardar o actualizar el pedido:', error);
+            console.error('Error al guardar o actualizar el pedido:', error.response?.data?.mensaje || error.message);
         }
     };
 
@@ -125,12 +158,11 @@ const GestionPedidos = () => {
     const handleEditClick = async (id) => {
         try {
             const pedidoData = await getGestionPedidoById(id);
-            console.log("Pedido para editar:", pedidoData);
             setSelectedPedido(pedidoData);
             setIsViewMode(false);
             setShowModal(true);
         } catch (error) {
-            console.error('Error al obtener el pedido:', error);
+            console.error('Error al obtener el pedido:', error.response?.data?.mensaje || error.message);
         }
     };
 
@@ -141,7 +173,7 @@ const GestionPedidos = () => {
             setIsViewMode(true);
             setShowModal(true);
         } catch (error) {
-            console.error('Error al obtener el pedido:', error);
+            console.error('Error al obtener el pedido:', error.response?.data?.mensaje || error.message);
         }
     };
 
@@ -149,9 +181,9 @@ const GestionPedidos = () => {
         if (window.confirm('¿Estás seguro de que deseas eliminar este pedido?')) {
             try {
                 await deleteGestionPedido(id);
-                fetchPedidos(); // Vuelve a cargar los pedidos después de eliminar
+                fetchPedidos();
             } catch (error) {
-                console.error('Error al eliminar el pedido:', error);
+                console.error('Error al eliminar el pedido:', error.response?.data?.mensaje || error.message);
             }
         }
     };
@@ -181,7 +213,7 @@ const GestionPedidos = () => {
         <Container>
             <h1 className="mt-4">Gestión de Pedidos</h1>
             <p className="text-muted">
-                La "Gestión de Pedidos" permite llevar un control detallado de los pedidos y sus productos. Gestionarlos correctamente ayuda a mejorar la eficiencia operativa.
+                La "Gestión de Pedidos" permite llevar un control detallado de los pedidos y sus productos.
             </p>
             <Row className="mb-3">
                 <Col md={6}>
@@ -196,14 +228,15 @@ const GestionPedidos = () => {
                     <Button variant="primary" onClick={() => { setSelectedPedido({}); setIsViewMode(false); setShowModal(true); }}>
                         <FaPlus /> Añadir Pedido
                     </Button>
-                    <Button variant="success" className="ms-2" onClick={exportToExcel}>
-                        <FaFileExcel />
+                    <Button variant="success" className="ms-2" onClick={() => setShowExportModal(true)}>
+                        <FaFileExcel /> Exportar
                     </Button>
-                    <Button variant="danger" className="ms-2" onClick={exportToPDF}>
-                        <FaFilePdf />
+                    <Button variant="danger" className="ms-2" onClick={() => setShowExportModal(true)}>
+                        <FaFilePdf /> Exportar
                     </Button>
                 </Col>
             </Row>
+
             <Table striped bordered hover id="pedidosTable">
                 <thead>
                     <tr>
@@ -223,14 +256,14 @@ const GestionPedidos = () => {
                             <td>{indexOfFirstItem + index + 1}</td>
                             <td>{pedido.cliente || 'Sin cliente'}</td>
                             <td>
-                                <span className="badge bg-info" style={{ padding: '5px', borderRadius: '5px' }}>
+                                <span className={`badge ${pedido.estado === 'Pendiente' ? 'bg-warning' : pedido.estado === 'Enviado' ? 'bg-primary' : 'bg-success'}`} style={{ padding: '5px', borderRadius: '5px' }}>
                                     {pedido.estado || 'Sin estado'}
                                 </span>
                             </td>
                             <td>{pedido.prioridad || 'Sin prioridad'}</td>
                             <td>{pedido.metodoEntrega || 'Sin método'}</td>
                             <td>{pedido.fechaEntrega ? new Date(pedido.fechaEntrega).toLocaleDateString() : 'Sin fecha'}</td>
-                            <td>{pedido.total && pedido.total > 0 ? formatCurrency(pedido.total) : 'Q0.00'}</td>
+                            <td>{pedido.totalPedido && pedido.totalPedido > 0 ? formatCurrency(pedido.totalPedido) : 'Q0.00'}</td>
                             <td className="text-center">
                                 <div className="d-flex justify-content-center">
                                     <Button variant="info" className="me-2" onClick={() => handleEditClick(pedido._id)}>
@@ -278,9 +311,17 @@ const GestionPedidos = () => {
                     handleClose={handleCloseModal}
                     pedido={selectedPedido}
                     isViewMode={isViewMode}
-                    handleSubmit={handleSubmit} // Pasa la función al modal
+                    handleSubmit={handleSubmit}
                 />
             )}
+
+            <ExportModal
+                show={showExportModal}
+                handleClose={() => setShowExportModal(false)}
+                handleExport={handleExportConfirm}
+                setExportFilter={setExportFilter}
+                exportFilter={exportFilter}
+            />
         </Container>
     );
 };

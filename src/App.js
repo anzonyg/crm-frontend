@@ -11,6 +11,8 @@ import Inventarios from './pages/Inventarios.js';
 import Proyectos from './pages/Proyectos.js';
 import Clientes from './pages/clientes';
 import GestionPedidos from './pages/GestionPedidos';
+import SeguimientoCotizaciones from './pages/SeguimientoCotizaciones';
+import Tareas from './pages/Tareas';
 import ReporteCotizacion from './pages/ReporteCotizacion'; // Importamos Filtro Cotizacion
 import Campanas from './pages/Campanas';
 import TicketsSoporte from './pages/TicketsSoporte';
@@ -39,6 +41,8 @@ function App() {
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/reporte-campanas" element={<ReporteCampanas />} />
         <Route path="/reporte-tickets" element={<ReporteTickets />} />
+        <Route path="/tareas" element={<Tareas />} />
+        <Route path="/seguimientoCotizaciones" element={<SeguimientoCotizaciones />} /> 
       </Routes>
     </Router>
   );

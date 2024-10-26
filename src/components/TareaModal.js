@@ -1,31 +1,24 @@
 import React, { useState, useEffect } from 'react';
 import { Modal, Button, Form, Row, Col, Table } from 'react-bootstrap';
 import { FaTimes, FaSave, FaPlus, FaTrash } from 'react-icons/fa';
-import { updateTarea, createTarea } from '../services/tareaService';
+import { updateTarea, createTarea } from '../services/tareaService';  // Asegúrate de tener este servicio
 
 const TareaModal = ({ show, handleClose, tarea, handleSubmit, isViewMode }) => {
     const [tareaData, setTareaData] = useState({
         titulo: '',
-        responsable: '',
-        fechaInicio: '',
-        fechaFin: '',
-        estado: '',
-        prioridad: '',
         descripcion: '',
-        subtareas: []
+        responsable: '',
+        estado: '',
+        adjuntos: []
     });
 
-    const [subtareaInput, setSubtareaInput] = useState({
-        descripcion: '',
-        responsable: '',
-        estado: ''
-    });
+    const [adjuntoInput, setAdjuntoInput] = useState(null);
 
     useEffect(() => {
         if (tarea) {
             setTareaData({
                 ...tarea,
-                subtareas: tarea.subtareas || []
+                adjuntos: tarea.adjuntos || []
             });
         }
     }, [tarea]);
@@ -38,40 +31,32 @@ const TareaModal = ({ show, handleClose, tarea, handleSubmit, isViewMode }) => {
         });
     };
 
-    const handleSubtareaChange = (e) => {
-        const { name, value } = e.target;
-        setSubtareaInput({
-            ...subtareaInput,
-            [name]: value
-        });
+    const handleAdjuntoChange = (e) => {
+        setAdjuntoInput(e.target.files[0]);
     };
 
-    const handleAddSubtarea = () => {
-        if (subtareaInput.descripcion && subtareaInput.responsable && subtareaInput.estado) {
+    const handleAddAdjunto = () => {
+        if (adjuntoInput) {
             setTareaData((prevData) => ({
                 ...prevData,
-                subtareas: [...prevData.subtareas, subtareaInput]
+                adjuntos: [...prevData.adjuntos, adjuntoInput.name]  // Solo agregamos el nombre
             }));
-            setSubtareaInput({ descripcion: '', responsable: '', estado: '' });
+            setAdjuntoInput(null);
         } else {
-            alert('Por favor complete todos los campos para la subtarea.');
+            alert('Debe seleccionar un archivo adjunto.');
         }
     };
 
-    const handleDeleteSubtarea = (index) => {
-        const updatedSubtareas = tareaData.subtareas.filter((_, i) => i !== index);
+    const handleDeleteAdjunto = (index) => {
+        const updatedAdjuntos = tareaData.adjuntos.filter((_, i) => i !== index);
         setTareaData({
             ...tareaData,
-            subtareas: updatedSubtareas
+            adjuntos: updatedAdjuntos
         });
     };
 
     const handleSubmitInternal = (e) => {
         e.preventDefault();
-        if (tareaData.subtareas.length === 0) {
-            alert('Debe agregar al menos una subtarea.');
-            return;
-        }
 
         if (tarea._id) {
             updateTarea(tarea._id, tareaData).then(() => handleClose());
@@ -122,27 +107,16 @@ const TareaModal = ({ show, handleClose, tarea, handleSubmit, isViewMode }) => {
                         </Col>
                     </Row>
                     <Row>
-                        <Col md={6}>
-                            <Form.Group className="mb-3" controlId="fechaInicio">
-                                <Form.Label>Fecha de Inicio</Form.Label>
+                        <Col md={12}>
+                            <Form.Group className="mb-3" controlId="descripcion">
+                                <Form.Label>Descripción</Form.Label>
                                 <Form.Control
-                                    type="date"
-                                    name="fechaInicio"
-                                    value={tareaData.fechaInicio}
+                                    as="textarea"
+                                    rows={3}
+                                    name="descripcion"
+                                    value={tareaData.descripcion}
                                     onChange={handleChange}
-                                    disabled={isViewMode}
-                                    required
-                                />
-                            </Form.Group>
-                        </Col>
-                        <Col md={6}>
-                            <Form.Group className="mb-3" controlId="fechaFin">
-                                <Form.Label>Fecha de Fin</Form.Label>
-                                <Form.Control
-                                    type="date"
-                                    name="fechaFin"
-                                    value={tareaData.fechaFin}
-                                    onChange={handleChange}
+                                    placeholder="Descripción de la tarea"
                                     disabled={isViewMode}
                                     required
                                 />
@@ -163,88 +137,27 @@ const TareaModal = ({ show, handleClose, tarea, handleSubmit, isViewMode }) => {
                                 >
                                     <option value="">Seleccionar Estado</option>
                                     <option value="Pendiente">Pendiente</option>
-                                    <option value="En Progreso">En Progreso</option>
+                                    <option value="En progreso">En progreso</option>
                                     <option value="Completada">Completada</option>
-                                </Form.Control>
-                            </Form.Group>
-                        </Col>
-                        <Col md={6}>
-                            <Form.Group className="mb-3" controlId="prioridad">
-                                <Form.Label>Prioridad</Form.Label>
-                                <Form.Control
-                                    as="select"
-                                    name="prioridad"
-                                    value={tareaData.prioridad}
-                                    onChange={handleChange}
-                                    disabled={isViewMode}
-                                    required
-                                >
-                                    <option value="">Seleccionar Prioridad</option>
-                                    <option value="Alta">Alta</option>
-                                    <option value="Media">Media</option>
-                                    <option value="Baja">Baja</option>
                                 </Form.Control>
                             </Form.Group>
                         </Col>
                     </Row>
-                    <Form.Group className="mb-3" controlId="descripcion">
-                        <Form.Label>Descripción</Form.Label>
-                        <Form.Control
-                            as="textarea"
-                            rows={3}
-                            name="descripcion"
-                            value={tareaData.descripcion}
-                            onChange={handleChange}
-                            disabled={isViewMode}
-                        />
-                    </Form.Group>
 
-                    <h5>Subtareas</h5>
+                    <h5>Archivos Adjuntos</h5>
                     <Row>
-                        <Col md={4}>
-                            <Form.Group className="mb-3" controlId="subtareaDescripcion">
-                                <Form.Label>Descripción de la Subtarea</Form.Label>
+                        <Col md={10}>
+                            <Form.Group className="mb-3" controlId="adjunto">
+                                <Form.Label>Subir Archivo</Form.Label>
                                 <Form.Control
-                                    type="text"
-                                    name="descripcion"
-                                    value={subtareaInput.descripcion}
-                                    onChange={handleSubtareaChange}
-                                    placeholder="Descripción de la subtarea"
+                                    type="file"
+                                    onChange={handleAdjuntoChange}
                                     disabled={isViewMode}
                                 />
-                            </Form.Group>
-                        </Col>
-                        <Col md={4}>
-                            <Form.Group className="mb-3" controlId="subtareaResponsable">
-                                <Form.Label>Responsable</Form.Label>
-                                <Form.Control
-                                    type="text"
-                                    name="responsable"
-                                    value={subtareaInput.responsable}
-                                    onChange={handleSubtareaChange}
-                                    placeholder="Responsable de la subtarea"
-                                    disabled={isViewMode}
-                                />
-                            </Form.Group>
-                        </Col>
-                        <Col md={4}>
-                            <Form.Group className="mb-3" controlId="subtareaEstado">
-                                <Form.Label>Estado</Form.Label>
-                                <Form.Control
-                                    as="select"
-                                    name="estado"
-                                    value={subtareaInput.estado}
-                                    onChange={handleSubtareaChange}
-                                    disabled={isViewMode}
-                                >
-                                    <option value="">Seleccionar Estado</option>
-                                    <option value="Pendiente">Pendiente</option>
-                                    <option value="Completada">Completada</option>
-                                </Form.Control>
                             </Form.Group>
                         </Col>
                         <Col className="d-flex justify-content-end">
-                            <Button onClick={handleAddSubtarea} disabled={!subtareaInput.descripcion || !subtareaInput.responsable || !subtareaInput.estado || isViewMode}>
+                            <Button onClick={handleAddAdjunto} disabled={!adjuntoInput || isViewMode}>
                                 <FaPlus />
                             </Button>
                         </Col>
@@ -254,21 +167,17 @@ const TareaModal = ({ show, handleClose, tarea, handleSubmit, isViewMode }) => {
                         <thead>
                             <tr>
                                 <th>#</th>
-                                <th>Descripción</th>
-                                <th>Responsable</th>
-                                <th>Estado</th>
+                                <th>Nombre del Archivo</th>
                                 <th>Acciones</th>
                             </tr>
                         </thead>
                         <tbody>
-                            {tareaData.subtareas.map((subtarea, index) => (
+                            {tareaData.adjuntos.map((adjunto, index) => (
                                 <tr key={index}>
                                     <td>{index + 1}</td>
-                                    <td>{subtarea.descripcion}</td>
-                                    <td>{subtarea.responsable}</td>
-                                    <td>{subtarea.estado}</td>
+                                    <td>{adjunto}</td>
                                     <td>
-                                        <Button variant="danger" onClick={() => handleDeleteSubtarea(index)}>
+                                        <Button variant="danger" onClick={() => handleDeleteAdjunto(index)}>
                                             <FaTrash />
                                         </Button>
                                     </td>
@@ -293,4 +202,3 @@ const TareaModal = ({ show, handleClose, tarea, handleSubmit, isViewMode }) => {
 };
 
 export default TareaModal;
-

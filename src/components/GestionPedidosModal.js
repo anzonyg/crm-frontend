@@ -106,7 +106,27 @@ const GestionPedidosModal = ({ show, handleClose, pedido, isViewMode, handleSubm
 
     const handleFormSubmit = (e) => {
         e.preventDefault();
-        handleSubmit(pedidoData); // Pasa los datos del pedido para guardar o editar
+
+        // Verificar si todos los campos obligatorios están completos
+        if (!pedidoData.cliente || !pedidoData.metodoEntrega || !pedidoData.direccionEntrega ||
+            !pedidoData.fechaEntrega || !pedidoData.estado || !pedidoData.prioridad || pedidoData.productos.length === 0) {
+            alert('Por favor complete todos los campos obligatorios.');
+            return;
+        }
+
+        // Calcular el total del pedido sumando los totales de todos los productos
+        const totalPedido = pedidoData.productos.reduce((acc, prod) => acc + prod.total, 0);
+
+        // Asignar el totalPedido al pedidoData
+        const pedidoConTotal = {
+            ...pedidoData,
+            totalPedido: totalPedido  // Aseguramos que el totalPedido se envía al backend
+        };
+
+        // Log para verificar qué se está enviando
+        console.log('Datos que se envían con totalPedido:', pedidoConTotal);
+
+        handleSubmit(pedidoConTotal);
     };
 
     const modalTitle = pedido && pedido._id ? 'Editar Pedido' : 'Crear Pedido';
@@ -127,7 +147,7 @@ const GestionPedidosModal = ({ show, handleClose, pedido, isViewMode, handleSubm
                                 <Form.Control
                                     type="text"
                                     name="cliente"
-                                    value={pedidoData.cliente}
+                                    value={pedidoData.cliente || ''}
                                     onChange={handleChange}
                                     placeholder="Nombre del cliente"
                                     disabled={isViewMode}
@@ -141,7 +161,7 @@ const GestionPedidosModal = ({ show, handleClose, pedido, isViewMode, handleSubm
                                 <Form.Control
                                     as="select"
                                     name="metodoEntrega"
-                                    value={pedidoData.metodoEntrega}
+                                    value={pedidoData.metodoEntrega || ''}
                                     onChange={handleChange}
                                     disabled={isViewMode}
                                     required
@@ -161,7 +181,7 @@ const GestionPedidosModal = ({ show, handleClose, pedido, isViewMode, handleSubm
                                 <Form.Control
                                     type="text"
                                     name="direccionEntrega"
-                                    value={pedidoData.direccionEntrega}
+                                    value={pedidoData.direccionEntrega || ''}
                                     onChange={handleChange}
                                     placeholder="Dirección de entrega"
                                     disabled={isViewMode}
@@ -175,7 +195,7 @@ const GestionPedidosModal = ({ show, handleClose, pedido, isViewMode, handleSubm
                                 <Form.Control
                                     type="date"
                                     name="fechaEntrega"
-                                    value={pedidoData.fechaEntrega ? pedidoData.fechaEntrega.split("T")[0] : ''} // Corrección
+                                    value={pedidoData.fechaEntrega ? pedidoData.fechaEntrega.split("T")[0] : ''}
                                     onChange={handleChange}
                                     disabled={isViewMode}
                                     required
@@ -190,7 +210,7 @@ const GestionPedidosModal = ({ show, handleClose, pedido, isViewMode, handleSubm
                                 <Form.Control
                                     as="select"
                                     name="estado"
-                                    value={pedidoData.estado}
+                                    value={pedidoData.estado || ''}
                                     onChange={handleChange}
                                     disabled={isViewMode}
                                     required
@@ -208,7 +228,7 @@ const GestionPedidosModal = ({ show, handleClose, pedido, isViewMode, handleSubm
                                 <Form.Control
                                     as="select"
                                     name="prioridad"
-                                    value={pedidoData.prioridad}
+                                    value={pedidoData.prioridad || ''}
                                     onChange={handleChange}
                                     disabled={isViewMode}
                                     required
@@ -228,7 +248,7 @@ const GestionPedidosModal = ({ show, handleClose, pedido, isViewMode, handleSubm
                                 <Form.Control
                                     as="textarea"
                                     name="observaciones"
-                                    value={pedidoData.observaciones}
+                                    value={pedidoData.observaciones || ''}
                                     onChange={handleChange}
                                     placeholder="Observaciones del pedido"
                                     disabled={isViewMode}
@@ -246,7 +266,7 @@ const GestionPedidosModal = ({ show, handleClose, pedido, isViewMode, handleSubm
                                 <Form.Control
                                     type="text"
                                     name="nombre"
-                                    value={productoInput.nombre}
+                                    value={productoInput.nombre || ''}
                                     onChange={handleProductoChange}
                                     placeholder="Nombre del producto"
                                     disabled={isViewMode}
@@ -259,7 +279,7 @@ const GestionPedidosModal = ({ show, handleClose, pedido, isViewMode, handleSubm
                                 <Form.Control
                                     type="number"
                                     name="cantidad"
-                                    value={productoInput.cantidad}
+                                    value={productoInput.cantidad || ''}
                                     onChange={handleProductoChange}
                                     placeholder="Cantidad"
                                     disabled={isViewMode}
@@ -273,7 +293,7 @@ const GestionPedidosModal = ({ show, handleClose, pedido, isViewMode, handleSubm
                                     type="number"
                                     step="0.01"
                                     name="precio"
-                                    value={productoInput.precio}
+                                    value={productoInput.precio || ''}
                                     onChange={handleProductoChange}
                                     placeholder="Precio"
                                     disabled={isViewMode}
@@ -298,7 +318,7 @@ const GestionPedidosModal = ({ show, handleClose, pedido, isViewMode, handleSubm
                                 <Form.Control
                                     as="select"
                                     name="estado"
-                                    value={productoInput.estado}
+                                    value={productoInput.estado || 'Pendiente'}
                                     onChange={handleProductoChange}
                                     disabled={isViewMode}
                                     required

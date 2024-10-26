@@ -25,6 +25,7 @@ const NavigationBar = () => {
               <NavDropdown.Item as={Link} to="/cotizaciones">Cotizaciones</NavDropdown.Item>
               <NavDropdown.Item as={Link} to="/reportCotizacion">Reporteria Cotizaciones</NavDropdown.Item>
               <NavDropdown.Item as={Link} to="/contratos">Gestión de Contratos</NavDropdown.Item>
+              <NavDropdown.Item as={Link} to="/gestion-pedidos">Gestión de Pedidos</NavDropdown.Item>
             </NavDropdown>
 
             {/* Proyectos y Actividades */}
@@ -38,6 +39,7 @@ const NavigationBar = () => {
               <NavDropdown.Item as={Link} to="/followupContracts">Seguimiento Contratos</NavDropdown.Item>
               <NavDropdown.Item as={Link} to="/campanas">Gestión de Campañas</NavDropdown.Item>
               <NavDropdown.Item as={Link} to="/reporte-campanas">Reporte de Campañas</NavDropdown.Item>
+              <NavDropdown.Item as={Link} to="/tareas">Gestión de Tareas</NavDropdown.Item>
             </NavDropdown>
 
             {/* Soporte al Cliente */}
