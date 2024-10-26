@@ -37,6 +37,7 @@ const NavigationBar = () => {
             {/* Seguimiento */}
             <NavDropdown title={<span><FaChartLine /> Seguimiento</span>} id="seguimiento-dropdown">
               <NavDropdown.Item as={Link} to="/followupContracts">Seguimiento Contratos</NavDropdown.Item>
+              <NavDropdown.Item as={Link} to="/seguimientoCotizaciones">Seguimiento de Cotizaciones</NavDropdown.Item>
               <NavDropdown.Item as={Link} to="/campanas">Gestión de Campañas</NavDropdown.Item>
               <NavDropdown.Item as={Link} to="/reporte-campanas">Reporte de Campañas</NavDropdown.Item>
               <NavDropdown.Item as={Link} to="/tareas">Gestión de Tareas</NavDropdown.Item>
