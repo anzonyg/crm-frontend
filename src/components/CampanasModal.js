@@ -3,26 +3,26 @@ import { Modal, Button, Form, Row, Col, InputGroup, Table } from 'react-bootstra
 import { FaTimes, FaSave, FaPlus, FaTrash } from 'react-icons/fa';
 import { updateCampanas, createCampanas } from '../services/campanasService';
 
+// Mover defaultCampana fuera del componente para evitar que se incluya en el array de dependencias
+const defaultCampana = {
+  nombre: '',
+  estado: '',
+  tipo: '',
+  producto: [],
+  fechaCreacion: '',
+  fechaInicio: '',
+  fechaEstimacionCierre: '',
+  publicoObjetivo: '',
+  patrocinador: [],
+  asignadoA: '',
+  presupuesto: '',
+  costeReal: '',
+  estimacionVentas: '',
+  ventasTotales: '',
+  descripcion: '',
+};
+
 const CampanasModal = ({ show, handleClose, campanas, isViewMode }) => {
-
-  const defaultCampana = {
-    nombre: '',
-    estado: '',
-    tipo: '',
-    producto: [],
-    fechaCreacion: '',
-    fechaInicio: '',
-    fechaEstimacionCierre: '',
-    publicoObjetivo: '',
-    patrocinador: [],
-    asignadoA: '',
-    presupuesto: '',
-    costeReal: '',
-    estimacionVentas: '',
-    ventasTotales: '',
-    descripcion: '',
-  }
-
   const [campanasData, setCampanasData] = useState(defaultCampana);
   const [productoInput, setProductoInput] = useState('');
   const [patrocinadorInput, setPatrocinadorInput] = useState('');
@@ -37,7 +37,7 @@ const CampanasModal = ({ show, handleClose, campanas, isViewMode }) => {
     } else {
       setCampanasData(defaultCampana);
     }
-  }, [campanas]);
+  }, [campanas]); // 'defaultCampana' no es necesario en el array de dependencias
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -105,11 +105,11 @@ const CampanasModal = ({ show, handleClose, campanas, isViewMode }) => {
     if (campanas && campanas._id) {
       updateCampanas(campanas._id, finalCampanasData)
         .then(() => handleClose())
-        .catch(error => console.error("Error:", error));
+        .catch(error => console.error("Error al actualizar la campaña:", error));
     } else {
       createCampanas(finalCampanasData)
         .then(() => handleClose())
-        .catch(error => console.error("Error:", error));
+        .catch(error => console.error("Error al crear la campaña:", error));
     }
 
     setCampanasData(defaultCampana);
@@ -228,7 +228,7 @@ const CampanasModal = ({ show, handleClose, campanas, isViewMode }) => {
                 <Form.Control
                   type="text"
                   name="presupuesto"
-                  value={campanasData.presupuesto ? `Q. ${campanasData.presupuesto}` : ''} 
+                  value={campanasData.presupuesto ? `Q. ${campanasData.presupuesto}` : ''}
                   onChange={(e) => {
                     const newValue = e.target.value.replace(/[^0-9]/g, ''); // Solo números
                     handleChange({ target: { name: 'presupuesto', value: newValue } });
@@ -248,7 +248,7 @@ const CampanasModal = ({ show, handleClose, campanas, isViewMode }) => {
                 <Form.Control
                   type="text"
                   name="costeReal"
-                  value={campanasData.presupuesto ? `Q. ${campanasData.presupuesto}` : ''}
+                  value={campanasData.costeReal ? `Q. ${campanasData.costeReal}` : ''}
                   onChange={(e) => {
                     const newValue = e.target.value.replace(/[^0-9]/g, ''); // Solo números
                     handleChange({ target: { name: 'costeReal', value: newValue } });
@@ -276,10 +276,11 @@ const CampanasModal = ({ show, handleClose, campanas, isViewMode }) => {
                   required
                   style={{ width: '150px' }} 
                 />
-            </Form.Group>
+              </Form.Group>
             </Col>
-            </Row>
-            <Row>
+          </Row>
+          {/* Fechas */}
+          <Row>
             <Col md={4}>
               <Form.Group className="mb-3" controlId="fechaCreacion">
                 <Form.Label>Fecha de Creación</Form.Label>
@@ -290,13 +291,13 @@ const CampanasModal = ({ show, handleClose, campanas, isViewMode }) => {
                   onChange={handleChange}
                   disabled={isViewMode}
                   required
-                  style={{ width: '130px' }} // Ajuste de tamaño
+                  style={{ width: '130px' }} 
                 />
               </Form.Group>
             </Col>
             <Col md={4}>
               <Form.Group className="mb-3" controlId="fechaInicio">
-                <Form.Label>  Fecha de Inicio</Form.Label>
+                <Form.Label>Fecha de Inicio</Form.Label>
                 <Form.Control
                   type="date"
                   name="fechaInicio"
@@ -304,7 +305,7 @@ const CampanasModal = ({ show, handleClose, campanas, isViewMode }) => {
                   onChange={handleChange}
                   disabled={isViewMode}
                   required
-                  style={{ width: '130px' }} // Ajuste de tamaño
+                  style={{ width: '130px' }} 
                 />
               </Form.Group>
             </Col>
@@ -318,11 +319,11 @@ const CampanasModal = ({ show, handleClose, campanas, isViewMode }) => {
                   onChange={handleChange}
                   disabled={isViewMode}
                   required
-                  style={{ width: '130px' }} // Ajuste de tamaño
+                  style={{ width: '130px' }} 
                 />
               </Form.Group>
             </Col>
-            </Row>
+          </Row>
 
           {/* Productos */}
           <h5>Productos</h5>
@@ -431,4 +432,3 @@ const CampanasModal = ({ show, handleClose, campanas, isViewMode }) => {
 };
 
 export default CampanasModal;
-
