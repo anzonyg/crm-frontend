@@ -5,7 +5,7 @@ import { obtenerCotizacionesFiltradas } from '../services/reportesService';
 import jsPDF from 'jspdf';
 import 'jspdf-autotable';
 import * as XLSX from 'xlsx';
-import { FaFilePdf, FaFileExcel } from 'react-icons/fa'; // Importar íconos
+import { FaFilePdf, FaFileExcel } from 'react-icons/fa'; 
 import logoUmg from '../assets/logo_umg.jpg';
 import logoCrm from '../assets/logo_crm.jpg';
 
@@ -55,7 +55,7 @@ const ReporteCotizaciones = () => {
     }
   };
 
-    // Función para generar el archivo 
+  // Función para generar el archivo PDF
   const generarPDF = () => {
     const doc = new jsPDF();
 
@@ -70,7 +70,7 @@ const ReporteCotizaciones = () => {
         canvas.height = img.height;
         const ctx = canvas.getContext('2d');
         ctx.drawImage(img, 0, 0);
-        const dataURL = canvas.toDataURL('image/jpeg'); // Convierte a Base64
+        const dataURL = canvas.toDataURL('image/jpeg'); 
         callback(dataURL);
       };
     };
@@ -78,31 +78,31 @@ const ReporteCotizaciones = () => {
     // Convertir las imágenes a Base64 y agregarlas al PDF
     getBase64Image(logoCrm, (base64LogoCrm) => {
       getBase64Image(logoUmg, (base64LogoUmg) => {
-        // Agregar el logo de CRM en la posición deseada (izquierda)
-        doc.addImage(base64LogoCrm, 'JPEG', 165, 10, 30, 30); // (imagen, formato, x, y, ancho, alto)
+        doc.addImage(base64LogoUmg, 'JPEG', 165, 10, 30, 30); 
+        doc.addImage(base64LogoCrm, 'JPEG', 14, 10, 30, 30); 
 
-        // Agregar el logo de UMG un poco a la derecha
-        doc.addImage(base64LogoUmg, 'JPEG', 14, 10, 30, 30); // Ajusta las coordenadas si es necesario
-
-        // Título
+        // Título centrado
         doc.setFontSize(18);
-        doc.text('Reporte de Cotizaciones', 14, 50);
+        doc.text('Reporte de Cotizaciones', doc.internal.pageSize.getWidth() / 2, 50, { align: 'center' });
 
-        // Filtros aplicados
-        doc.setFontSize(12);
-        doc.text('Filtros aplicados:', 14, 60);
-        Object.keys(filtrosAplicados).forEach((key, index) => {
-          doc.text(`${key}: ${filtrosAplicados[key]}`, 14, 70 + index * 10);
-        });
+        // Mostrar solo los filtros que fueron aplicados
+        const filtrosUsados = Object.entries(filtrosAplicados).filter(([key, value]) => value !== '');
+        if (filtrosUsados.length > 0) {
+          doc.setFontSize(12);
+          doc.text('Filtros aplicados:', 14, 60);
+          filtrosUsados.forEach(([key, value], index) => {
+            doc.text(`${key}: ${value}`, 14, 70 + index * 10);
+          });
+        }
 
-        // Fecha y hora de creación
+        // Fecha y hora de creación alineada a la derecha
         const fecha = new Date().toLocaleDateString();
         const hora = new Date().toLocaleTimeString();
-        doc.text(`Fecha de creación: ${fecha} - ${hora}`, 14, 70 + Object.keys(filtrosAplicados).length * 10 + 10);
+        doc.text(`Fecha de creación: ${fecha} - ${hora}`, doc.internal.pageSize.getWidth() - 14, 60, { align: 'right' });
 
         // Agregar tabla de cotizaciones
         doc.autoTable({
-          startY: 90 + Object.keys(filtrosAplicados).length * 10,
+          startY: 90,
           head: [['Nombre', 'Empresa', 'Correo', 'Teléfono', 'Descripción', 'Total', 'Estado', 'Fecha de Creación']],
           body: cotizacionesPaginadas.map(cotizacion => [
             cotizacion.nombre,
@@ -116,12 +116,10 @@ const ReporteCotizaciones = () => {
           ]),
         });
 
-        // Guardar el PDF
         doc.save(`Reporte_Cotizaciones_${fecha}.pdf`);
       });
     });
   };
-
 
   // Función para generar el archivo Excel
   const exportarExcel = () => {
@@ -157,7 +155,6 @@ const ReporteCotizaciones = () => {
       </p>
       <FiltrosCotizaciones className="mt-2" onFiltrar={filtrarCotizaciones} />
 
-      {/* Mostrar mensaje si aún no se ha realizado una búsqueda */}
       {!busquedaRealizada ? (
         <p className="text-center mt-4">Realiza una búsqueda para ver las cotizaciones.</p>
       ) : (
